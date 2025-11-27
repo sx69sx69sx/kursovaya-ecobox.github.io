@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaQuestionCircle, FaChevronDown, FaSearch, FaPlus, FaMinus, FaPhone  } from 'react-icons/fa';
+import {
+  FaQuestionCircle,
+  FaChevronDown,
+  FaSearch,
+  FaPlus,
+  FaMinus,
+  FaPhone
+} from 'react-icons/fa';
 
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -15,336 +22,373 @@ const FAQ = () => {
     other: true
   });
 
-  // 30+ РЕАЛИСТИЧНЫХ ВОПРОСОВ
+  // ДАННЫЕ FAQ
   const faqData = [
-    // ПОДПИСКИ
     {
       category: 'subscriptions',
       questions: [
         {
           q: 'Что такое подписка EcoBox?',
-          a: 'Подписка — это ежемесячная доставка экологичных товаров. Выбираете тариф (Basic/Popular/Premium) и получаете коробку с 5-12 товарами на дом.'
+          a: 'Подписка — это ежемесячная доставка экологичных товаров. Выбираете тариф и получаете коробку с 5–12 товарами на дом.'
         },
         {
           q: 'Можно ли пропустить месяц?',
-          a: 'Да! Пропуск месяца бесплатный. Зайдите в Личный кабинет → "Управление подпиской" → "Пропустить месяц".'
+          a: 'Да. Личный кабинет → «Управление подпиской» → «Пропустить месяц». Оплата за этот месяц не списывается.'
         },
         {
           q: 'Как изменить тариф подписки?',
-          a: 'В Личном кабинете: "Моя подписка" → "Изменить тариф". Можно менять в любое время, изменения вступят с следующего месяца.'
+          a: 'Личный кабинет → «Моя подписка» → «Изменить тариф». Изменения вступают в силу со следующего месяца.'
         },
         {
           q: 'Что будет, если не оплатить подписку?',
-          a: 'Подписка автоматически продлевается. Если оплата не прошла, мы отправим напоминание. Через 7 дней доступ к ЛК временно блокируется.'
+          a: 'Мы напомним о платеже. Если оплата не проходит в течение 7 дней, подписка приостанавливается до оплаты.'
         },
         {
           q: 'Можно ли отменить подписку?',
-          a: 'Да, бесплатно в любой момент. ЛК → "Управление подпиской" → "Отменить". Товары текущего месяца вы получите.'
+          a: 'Да, в любой момент. Личный кабинет → «Управление подпиской» → «Отменить подписку». Текущий оплаченный месяц доставим в обычном порядке.'
         }
       ]
     },
-    
-    // ТОВАРЫ
     {
       category: 'products',
       questions: [
         {
           q: 'Безопасны ли товары для детей?',
-          a: '100%! Все продукты сертифицированы, без парабенов, сульфатов и синтетики. Подходят для детей с 0+.'
+          a: 'Все товары проходят сертификацию и не содержат парабенов, SLS и агрессивной химии. Для детей с особенностями здоровья уточняйте состав у врача.'
         },
         {
           q: 'Есть ли срок годности?',
-          a: 'Да, указан на каждом товаре. Мы отправляем только свежие партии (срок от 6 месяцев на момент доставки).'
+          a: 'Да. Срок годности указан на упаковке. Мы отправляем только свежие партии с достаточным запасом по сроку.'
         },
         {
           q: 'Можно ли выбрать конкретные товары?',
-          a: 'В Premium подписке — да! В Basic/Popular — сюрпризная коробка с вашими предпочтениями (косметика/дом/еда).'
+          a: 'В части тарифов — да. В базовых коробках мы подбираем товары под ваши предпочтения (косметика / дом / гигиена).'
         },
         {
-          q: 'Аллергены в составе?',
-          a: 'Полный состав на сайте. Если аллергия — укажите в профиле, мы исключим такие товары из вашей коробки.'
+          q: 'Как узнать состав товара?',
+          a: 'Полный состав указан на странице товара и на упаковке. Мы стараемся использовать максимально понятные ингредиенты.'
         },
         {
           q: 'Где посмотреть предыдущие коробки?',
-          a: 'ЛК → "История заказов" → клик на месяц. Там фото + полный список товаров.'
+          a: 'Личный кабинет → «История заказов» → выбранный месяц. Там отображается состав коробки и список товаров.'
         }
       ]
     },
-
-    // ДОСТАВКА
     {
       category: 'delivery',
       questions: [
         {
           q: 'Сколько стоит доставка?',
-          a: 'Бесплатно от 1500 ₽. Иначе: СДЭК 250 ₽, Boxberry 200 ₽, Курьер 350 ₽, Самовывоз — бесплатно.'
+          a: 'При заказе от 1500 ₽ — бесплатно. Ниже этой суммы стоимость зависит от выбранной службы доставки и региона.'
         },
         {
-          q: 'Сколько дней доставка?',
-          a: 'Москва/СПб: 1 день. Другие города: 1-3 дня. Трекинг-номер приходит на email и в ЛК.'
+          q: 'Сколько времени занимает доставка?',
+          a: 'В среднем 1–3 дня по России. Для отдалённых регионов срок может быть больше — актуальный срок отображается при оформлении заказа.'
         },
         {
-          q: 'Можно ли изменить адрес?',
-          a: 'До 18:00 дня доставки — да. Позвоните +7 (495) 123-45-67 или напишите в Telegram.'
+          q: 'Можно ли изменить адрес доставки?',
+          a: 'Да, до передачи заказа в службу доставки. Напишите нам или обновите адрес в личном кабинете в разделе «Доставка».'
         },
         {
-          q: 'Что в эко-упаковке?',
-          a: 'Крафт-коробка + наполнитель из кукурузы. 100% перерабатывается. Без пластика!'
+          q: 'Что такое эко-упаковка?',
+          a: 'Мы используем крафтовые коробки, бумажный скотч и перерабатываемый наполнитель — без пузырчатой плёнки и лишнего пластика.'
         },
         {
-          q: 'Работаете ли в праздники?',
-          a: 'Да, кроме 1-8 января. График доставки уточняйте в ЛК или по телефону.'
+          q: 'Работаете ли вы в праздники?',
+          a: 'В большинстве праздников мы работаем по сокращённому графику. Актуальный режим всегда указан на странице доставки и в соцсетях.'
         }
       ]
     },
-
-    // ОПЛАТА
     {
       category: 'payment',
       questions: [
         {
-          q: 'Какие способы оплаты?',
-          a: 'Карта (Мир/Visa/MC), СБП, ЮMoney, наличными при получении. Подписка — только картой.'
+          q: 'Какие способы оплаты доступны?',
+          a: 'Банковские карты, СБП и другие распространённые способы. Подписка оформляется только по карте для автоматического продления.'
         },
         {
-          q: 'Безопасна ли оплата?',
-          a: 'Да! Сертификат PCI DSS. Все данные шифруются. Деньги списываются только после получения.'
+          q: 'Безопасна ли онлайн-оплата?',
+          a: 'Мы используем защищённые платёжные шлюзы. Данные карты не хранятся у нас и передаются в зашифрованном виде.'
         },
         {
-          q: 'Где посмотреть чек?',
-          a: 'ЛК → "История заказов" → клик на заказ → "Скачать чек". Также приходит на email.'
+          q: 'Где можно скачать чек?',
+          a: 'Личный кабинет → «История заказов» → нужный заказ → «Скачать чек». Дубликат чека приходит на email.'
         },
         {
-          q: 'Скидка за предоплату?',
-          a: '5% на первый заказ! В корзине выберите "Оплатить сейчас".'
+          q: 'Есть ли скидка за предоплату?',
+          a: 'Иногда мы проводим акции с дополнительной скидкой при оплате сразу нескольких месяцев подписки. Следите за новостями.'
         },
         {
-          q: 'Возврат денег?',
-          a: 'Если товар бракованный — 100% возврат в течение 14 дней. Деньги на карту 3-5 дней.'
+          q: 'Как вернуть деньги при отмене?',
+          a: 'При согласованном возврате мы оформляем возврат на ту же карту, с которой была оплата. Срок зачисления зависит от банка (обычно до 5 рабочих дней).'
         }
       ]
     },
-
-    // ВОЗВРАТЫ
     {
       category: 'returns',
       questions: [
         {
           q: 'Можно ли вернуть товар?',
-          a: 'Да, 14 дней. Не вскрытые упаковки. Отправьте СДЭК на наш адрес, приложите чек.'
+          a: 'В течение 14 дней вы можете оформить возврат ненадлежащего товара. Для этого напишите нам и приложите фото проблемы.'
         },
         {
           q: 'Кто оплачивает обратную доставку?',
-          a: 'Если брак — мы. Если просто передумали — вы (250 ₽).'
+          a: 'Если подтверждён производственный брак — обратную доставку оплачиваем мы. В остальных случаях — покупатель.'
         },
         {
-          q: 'Как оформить возврат?',
-          a: 'ЛК → "Возвраты" → фото товара + причина → печать этикетки → отправка.'
+          q: 'Как оформить возврат подписки?',
+          a: 'Отмена подписки действует на будущие поставки. Уже сформированную и отправленную коробку можно вернуть как обычный заказ по правилам магазина.'
         }
       ]
     },
-
-    // ПРОЧЕЕ
     {
       category: 'other',
       questions: [
         {
-          q: 'Есть ли промокоды?',
-          a: 'Да! На первый заказ: ECOFIRST (10%). Ищите в Instagram/TG.'
+          q: 'Есть ли промокоды для новых клиентов?',
+          a: 'Иногда мы публикуем промокоды в рассылке и соцсетях. Подпишитесь на наш Telegram и email, чтобы не пропускать акции.'
         },
         {
-          q: 'Программа лояльности?',
-          a: 'Баллы: 1 ₽ = 1 балл. 1000 баллов = 100 ₽ скидка. Начисляем за каждый заказ.'
+          q: 'Есть программа лояльности?',
+          a: 'Да, за каждый заказ начисляются бонусы, которыми можно оплатить часть следующей покупки.'
         },
         {
-          q: 'Подарочные подписки?',
-          a: 'Да! От 3 месяцев. Укажите получателя при оформлении.'
+          q: 'Можно ли оформить подписку в подарок?',
+          a: 'Да. При оформлении укажите получателя и адрес доставки — мы отправим коробки напрямую ему, а чеки останутся у вас.'
         }
       ]
     }
   ];
 
-  // ФИЛЬТР ПО ПОИСКУ
-  const filteredFaq = faqData.map(category => ({
-    ...category,
-    questions: category.questions.filter(q => 
-      q.q.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      q.a.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  })).filter(category => category.questions.length > 0);
+  // Фильтрация по поиску
+  const filteredFaq = faqData
+    .map((category) => ({
+      ...category,
+      questions: category.questions.filter(
+        (q) =>
+          q.q.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          q.a.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }))
+    .filter((category) => category.questions.length > 0);
 
   const toggleCategory = (category) => {
-    setOpenCategories(prev => ({
+    setOpenCategories((prev) => ({
       ...prev,
       [category]: !prev[category]
     }));
   };
 
   const toggleQuestion = (index) => {
-    setActiveIndex(activeIndex === index ? null : index);
+    setActiveIndex((prev) => (prev === index ? null : index));
+  };
+
+  const getCategoryTitle = (key) => {
+    switch (key) {
+      case 'subscriptions':
+        return 'Подписки';
+      case 'products':
+        return 'Товары';
+      case 'delivery':
+        return 'Доставка';
+      case 'payment':
+        return 'Оплата';
+      case 'returns':
+        return 'Возвраты';
+      case 'other':
+        return 'Прочее';
+      default:
+        return key;
+    }
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-gradient-to-b from-emerald-50 to-white"
+      className="min-h-screen bg-white text-black"
     >
-      {/* HEADER */}
-      <nav className="py-4 bg-white border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center space-x-4">
-            <Link to="/" className="flex items-center text-emerald-600 hover:text-emerald-700 transition">
-              <span className="mr-2">←</span> Главная
+      {/* HEADER / КРОШКИ */}
+      <header className="border-b border-black/10">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3 text-xs">
+            <Link
+              to="/"
+              className="uppercase tracking-[0.25em] text-black/60 hover:text-black transition-colors flex items-center"
+            >
+              <span className="mr-2 text-[10px]">←</span>
+              Главная
             </Link>
-            <span className="text-gray-400">/</span>
-            <span className="font-semibold text-emerald-800">FAQ</span>
+            <span className="text-black/30">/</span>
+            <span className="uppercase tracking-[0.25em] text-black">
+              FAQ
+            </span>
+          </div>
+
+          <div className="hidden md:block text-[11px] uppercase tracking-[0.3em] text-black/50">
+            Экологичные товары по подписке
           </div>
         </div>
-      </nav>
+      </header>
 
-      {/* HERO */}
-      <section className="pt-24 pb-20 bg-gradient-to-r from-emerald-800 to-teal-700 text-white">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <motion.h1 
-            initial={{ y: -50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="text-5xl md:text-7xl font-extrabold mb-6"
-          >
+      <main className="max-w-5xl mx-auto px-6 py-12">
+        {/* HERO */}
+        <section className="border-b border-black/10 pb-10 mb-10 text-center">
+          <p className="text-[11px] uppercase tracking-[0.3em] text-black/50 mb-3">
             Помощь и поддержка
-          </motion.h1>
-          <motion.p 
-            initial={{ y: -50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-xl md:text-2xl max-w-3xl mx-auto"
-          >
-            Ответы на все вопросы об EcoBox
-          </motion.p>
-        </div>
-      </section>
+          </p>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight uppercase mb-3">
+            Ответы на частые вопросы
+          </h1>
+          <p className="text-sm md:text-base text-black/60 max-w-2xl mx-auto">
+            Здесь собраны основные вопросы о подписке, доставке, оплате и
+            товарах. Введите ключевое слово в поиск или раскройте нужную
+            категорию.
+          </p>
+        </section>
 
-      {/* SEARCH */}
-      <section className="py-12 bg-white">
-        <div className="max-w-4xl mx-auto px-6">
+        {/* ПОИСК */}
+        <section className="mb-10">
           <div className="relative">
-            <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-400" />
+            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-black/40 text-sm" />
             <input
               type="text"
               placeholder="Поиск по вопросам..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 border border-emerald-200 rounded-full focus:ring-2 focus:ring-emerald-500"
+              className="w-full border border-black/20 pl-9 pr-3 py-3 text-sm focus:outline-none focus:border-black"
             />
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* FAQ CATEGORIES */}
-      <section className="py-20 bg-emerald-50">
-        <div className="max-w-4xl mx-auto px-6">
+        {/* КАТЕГОРИИ + ВОПРОСЫ */}
+        <section className="mb-16">
           {filteredFaq.map((category, catIndex) => (
             <motion.div
               key={category.category}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              className="mb-8"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: catIndex * 0.03 }}
+              className="mb-6 border border-black/10"
             >
-              {/* CATEGORY HEADER */}
-              <div 
-                className="flex items-center justify-between p-4 bg-white rounded-t-xl cursor-pointer"
+              {/* Заголовок категории */}
+              <button
+                type="button"
                 onClick={() => toggleCategory(category.category)}
+                className="w-full px-4 py-4 flex items-center justify-between text-left"
               >
-                <h2 className="text-xl font-bold text-emerald-800 flex items-center">
-                  <FaQuestionCircle className="mr-2" />
-                  {category.category === 'subscriptions' && 'Подписки'}
-                  {category.category === 'products' && 'Товары'}
-                  {category.category === 'delivery' && 'Доставка'}
-                  {category.category === 'payment' && 'Оплата'}
-                  {category.category === 'returns' && 'Возвраты'}
-                  {category.category === 'other' && 'Прочее'}
-                  <span className="ml-2 text-sm text-emerald-600">({category.questions.length})</span>
-                </h2>
-                <FaChevronDown 
-                  className={`transition-transform ${openCategories[category.category] ? 'rotate-180' : ''}`} 
+                <div className="flex items-center gap-3">
+                  <FaQuestionCircle className="text-sm" />
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.25em]">
+                      {getCategoryTitle(category.category)}
+                    </p>
+                    <p className="text-[11px] text-black/50">
+                      {category.questions.length} вопрос(ов)
+                    </p>
+                  </div>
+                </div>
+                <FaChevronDown
+                  className={`text-xs transition-transform ${
+                    openCategories[category.category] ? 'rotate-180' : ''
+                  }`}
                 />
-              </div>
+              </button>
 
-              {/* QUESTIONS */}
+              {/* Список вопросов */}
               {openCategories[category.category] && (
-                <div className="bg-white rounded-b-xl divide-y divide-emerald-100">
-                  {category.questions.map((question, qIndex) => (
-                    <div key={qIndex} className="p-4">
-                      <button
-                        className="w-full flex justify-between items-center text-left"
-                        onClick={() => toggleQuestion(`${catIndex}-${qIndex}`)}
-                      >
-                        <span className="font-semibold text-emerald-800">{question.q}</span>
-                        {activeIndex === `${catIndex}-${qIndex}` ? 
-                          <FaMinus className="text-emerald-500" /> : 
-                          <FaPlus className="text-emerald-500" />
-                        }
-                      </button>
-                      {activeIndex === `${catIndex}-${qIndex}` && (
-                        <motion.p 
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          className="mt-3 text-emerald-700 pl-4"
+                <div className="border-t border-black/5">
+                  {category.questions.map((question, qIndex) => {
+                    const indexKey = `${catIndex}-${qIndex}`;
+                    const isActive = activeIndex === indexKey;
+                    return (
+                      <div key={indexKey} className="border-t border-black/5">
+                        <button
+                          type="button"
+                          onClick={() => toggleQuestion(indexKey)}
+                          className="w-full px-4 py-3 flex items-center justify-between text-left text-sm"
                         >
-                          {question.a}
-                        </motion.p>
-                      )}
-                    </div>
-                  ))}
+                          <span className="pr-4">{question.q}</span>
+                          {isActive ? (
+                            <FaMinus className="text-[10px]" />
+                          ) : (
+                            <FaPlus className="text-[10px]" />
+                          )}
+                        </button>
+                        {isActive && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="px-4 pb-4 text-[13px] text-black/75"
+                          >
+                            {question.a}
+                          </motion.div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </motion.div>
           ))}
-        </div>
-      </section>
 
-      {/* CTA */}
-      <section className="py-20 bg-emerald-800 text-white">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-6">Не нашли ответ?</h2>
-          <p className="text-xl mb-8">Напишите нам — поможем за 24 часа!</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          {filteredFaq.length === 0 && (
+            <p className="text-sm text-black/60">
+              По вашему запросу ничего не найдено. Попробуйте изменить формулировку.
+            </p>
+          )}
+        </section>
+
+        {/* CTA + КОНТАКТЫ */}
+        <section className="border border-black/10 px-6 py-8 mb-10 text-center">
+          <p className="text-[11px] uppercase tracking-[0.3em] text-black/60 mb-3">
+            Не нашли ответ
+          </p>
+          <p className="text-sm text-black/75 mb-6 max-w-md mx-auto">
+            Напишите нам — команда поддержки поможет с подпиской, оплатой,
+            доставкой и подбором товаров.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to="/contacts"
-              className="bg-white text-emerald-800 px-8 py-4 rounded-full font-bold hover:bg-emerald-50"
+              className="inline-flex items-center justify-center px-8 py-3 border border-black text-xs font-semibold uppercase tracking-[0.25em] hover:bg-black hover:text-white transition-colors"
             >
-              Написать в поддержку
+              Связаться через форму
             </Link>
             <a
               href="tel:+74951234567"
-              className="flex items-center justify-center space-x-2 bg-transparent border-2 border-white text-white px-8 py-4 rounded-full font-bold hover:bg-white hover:text-emerald-800"
+              className="inline-flex items-center justify-center px-8 py-3 border border-black text-xs font-semibold uppercase tracking-[0.25em] hover:bg-black hover:text-white transition-colors"
             >
-              <FaPhone />
-              <span>+7 (495) 123-45-67</span>
+              <FaPhone className="text-[11px] mr-2" />
+              +7 (495) 123-45-67
             </a>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* STATS */}
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div>
-              <div className="text-3xl font-bold text-emerald-600 mb-2">98%</div>
-              <p className="text-emerald-700">Вопросов решено</p>
+        {/* НЕБОЛЬШАЯ СТАТИСТИКА */}
+        <section className="mb-4">
+          <div className="grid md:grid-cols-3 gap-4 text-center text-sm">
+            <div className="border border-black/10 px-4 py-4">
+              <p className="text-xl font-semibold mb-1">98%</p>
+              <p className="text-black/70 text-[13px]">
+                запросов решаем с первого обращения
+              </p>
             </div>
-            <div>
-              <div className="text-3xl font-bold text-emerald-600 mb-2">24ч</div>
-              <p className="text-emerald-700">Среднее время ответа</p>
+            <div className="border border-black/10 px-4 py-4">
+              <p className="text-xl font-semibold mb-1">24 ч</p>
+              <p className="text-black/70 text-[13px]">
+                среднее время полного ответа
+              </p>
             </div>
-            <div>
-              <div className="text-3xl font-bold text-emerald-600 mb-2">5000+</div>
-              <p className="text-emerald-700">Помогла клиентам</p>
+            <div className="border border-black/10 px-4 py-4">
+              <p className="text-xl font-semibold mb-1">5000+</p>
+              <p className="text-black/70 text-[13px]">
+                клиентов уже пользуются поддержкой
+              </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
     </motion.div>
   );
 };

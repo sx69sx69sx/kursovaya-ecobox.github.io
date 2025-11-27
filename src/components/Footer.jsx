@@ -17,9 +17,9 @@ const Footer = () => {
           
           {/* Brand */}
           <div className="space-y-3">
-            <h3 className="text-xl tracking-wide font-light">EcoBox</h3>
+            <h3 className="text-xl tracking-wide font-light">ЭКОБОКС</h3>
             <p className="text-white/50 leading-relaxed max-w-xs">
-              Экологичные товары каждый месяц — curated with care.
+              Экологичные товары каждый месяц — заботимся о Вас и экологии.
             </p>
           </div>
 
@@ -56,7 +56,7 @@ const Footer = () => {
         {/* bottom line divider */}
         <div className="mt-20 pt-10 border-t border-white/10 text-center">
           <p className="text-white/40 tracking-wide text-sm">
-            © 2025 EcoBox. Все права защищены.
+            © 2025 "ЭКОБОКС". Все права защищены.
           </p>
         </div>
       </div>

@@ -2,13 +2,13 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
-import { 
-  FaBox, 
-  FaMinus, 
-  FaPlus, 
-  FaTrash, 
+import {
+  FaBox,
+  FaMinus,
+  FaPlus,
+  FaTrash,
   FaCheckCircle,
-  FaArrowLeft 
+  FaArrowLeft
 } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 
@@ -16,26 +16,42 @@ const Box = () => {
   const { state, dispatch } = useCart();
   const navigate = useNavigate();
 
-  const totalPrice = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const totalPrice = state.items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
   const totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleSubscription = () => {
     if (totalItems >= 5) {
-      toast.success('✅ Коробка готова! Переходим к подписке');
+      toast.success('Коробка готова. Переходим к оформлению подписки.');
       navigate('/subscription/popular');
     } else {
-      toast.error('❌ Добавьте минимум 5 товаров в коробку');
+      toast.error('Добавьте минимум 5 товаров в коробку.');
     }
   };
 
+  // пустая коробка
   if (state.items.length === 0) {
     return (
-      <motion.div className="min-h-screen bg-emerald-50 py-20">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <FaBox className="text-9xl text-emerald-200 mx-auto mb-8" />
-          <h1 className="text-5xl font-bold text-emerald-800 mb-4">Ваша коробка пуста</h1>
-          <p className="text-xl text-emerald-600 mb-8">Выберите товары для ежемесячной подписки</p>
-          <Link to="/products" className="bg-yellow-400 text-emerald-800 px-8 py-4 rounded-full font-bold text-xl">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen bg-white text-black"
+      >
+        <div className="max-w-4xl mx-auto px-6 py-20 text-center">
+          <FaBox className="text-7xl text-black/10 mx-auto mb-8" />
+          <h1 className="text-4xl font-extrabold tracking-tight uppercase mb-4">
+            Ваша коробка пуста
+          </h1>
+          <p className="text-sm uppercase tracking-[0.25em] text-black/50 mb-10">
+            выберите товары для ежемесячной подписки
+          </p>
+
+          <Link
+            to="/products"
+            className="inline-flex items-center justify-center px-10 py-4 border border-black text-xs font-semibold uppercase tracking-[0.25em] hover:bg-black hover:text-white transition-colors"
+          >
             Выбрать товары
           </Link>
         </div>
@@ -44,79 +60,170 @@ const Box = () => {
   }
 
   return (
-    <motion.div className="min-h-screen bg-emerald-50 py-12">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="flex items-center mb-8">
-          <Link to="/products" className="flex items-center text-emerald-600 mr-4">
-            <FaArrowLeft /> Каталог
-          </Link>
-          <h1 className="text-4xl font-bold text-emerald-800">
-            Моя коробка ({totalItems} товаров)
-          </h1>
-        </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-white text-black"
+    >
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        {/* шапка */}
+        <header className="mb-10 border-b border-black/10 pb-6">
+          <div className="flex items-center justify-between mb-4">
+            <Link
+              to="/products"
+              className="inline-flex items-center text-xs tracking-[0.25em] uppercase text-black/60 hover:text-black transition-colors"
+            >
+              <FaArrowLeft className="mr-2 text-[10px]" />
+              Каталог
+            </Link>
 
-        {/* ТОВАРЫ В КОРОБКЕ */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-          {state.items.map((item) => (
-            <motion.div key={item.id} className="flex items-center p-6 border-b border-emerald-100">
-              <div className="w-20 h-20 bg-emerald-50 rounded-xl flex items-center justify-center mr-4">
-                <span className="text-3xl">{item.image}</span>
-              </div>
-              
-              <div className="flex-1">
-                <h3 className="font-bold text-emerald-800">{item.title}</h3>
-                <p className="text-emerald-600">{item.price} ₽/мес</p>
-              </div>
+            <div className="text-[11px] uppercase tracking-[0.25em] text-black/50 hidden sm:block">
+              Эко-товары по подписке
+            </div>
+          </div>
 
-              <div className="flex items-center space-x-3 mr-4">
-                <button onClick={() => dispatch({ type: 'UPDATE_QUANTITY', payload: { id: item.id, quantity: item.quantity - 1 } })} className="p-2 bg-emerald-100 rounded-full">
-                  <FaMinus />
-                </button>
-                <span className="w-10 text-center font-bold">{item.quantity}</span>
-                <button onClick={() => dispatch({ type: 'UPDATE_QUANTITY', payload: { id: item.id, quantity: item.quantity + 1 } })} className="p-2 bg-emerald-100 rounded-full">
-                  <FaPlus />
-                </button>
-              </div>
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight uppercase">
+              Моя коробка
+            </h1>
+            <p className="text-xs uppercase tracking-[0.25em] text-black/60">
+              {totalItems} товаров • обновление каждый месяц
+            </p>
+          </div>
+        </header>
 
-              <div className="text-right">
-                <p className="font-bold text-xl text-emerald-600">{(item.price * item.quantity)} ₽/мес</p>
-                <button onClick={() => dispatch({ type: 'REMOVE_ITEM', payload: item.id })} className="text-red-500 mt-2">
-                  <FaTrash />
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        <div className="grid lg:grid-cols-3 gap-10">
+          {/* товары в коробке */}
+          <section className="lg:col-span-2 border border-black/10 bg-white">
+            {state.items.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, delay: index * 0.04 }}
+                className="flex items-center px-6 py-4 border-b border-black/5 last:border-b-0"
+              >
+                <div className="w-20 h-20 mr-5 border border-black/15 bg-black/5 flex items-center justify-center overflow-hidden">
+                  {item.image && (
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
 
-        {/* ПРОГРЕСС + ОФОРМЛЕНИЕ */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg">
-          <div className="flex justify-between items-center mb-6">
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold uppercase tracking-wide mb-1">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-black/60">
+                    {item.price} ₽ / мес
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 mr-6">
+                  <button
+                    onClick={() =>
+                      item.quantity > 1 &&
+                      dispatch({
+                        type: 'UPDATE_QUANTITY',
+                        payload: { id: item.id, quantity: item.quantity - 1 }
+                      })
+                    }
+                    className="w-8 h-8 border border-black/20 flex items-center justify-center text-xs hover:bg-black hover:text-white transition-colors"
+                  >
+                    <FaMinus />
+                  </button>
+                  <span className="w-8 text-center text-sm font-semibold">
+                    {item.quantity}
+                  </span>
+                  <button
+                    onClick={() =>
+                      dispatch({
+                        type: 'UPDATE_QUANTITY',
+                        payload: { id: item.id, quantity: item.quantity + 1 }
+                      })
+                    }
+                    className="w-8 h-8 border border-black/20 flex items-center justify-center text-xs hover:bg-black hover:text-white transition-colors"
+                  >
+                    <FaPlus />
+                  </button>
+                </div>
+
+                <div className="text-right min-w-[90px]">
+                  <p className="text-sm font-semibold mb-1">
+                    {item.price * item.quantity} ₽
+                  </p>
+                  <button
+                    onClick={() =>
+                      dispatch({ type: 'REMOVE_ITEM', payload: item.id })
+                    }
+                    className="text-[11px] uppercase tracking-[0.2em] text-black/50 hover:text-black inline-flex items-center gap-1"
+                  >
+                    <FaTrash className="text-[10px]" />
+                    Удалить
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </section>
+
+          {/* итог + переход к подписке */}
+          <section className="border border-black/10 bg-white px-6 py-6 flex flex-col justify-between">
             <div>
-              <span className="text-xl text-emerald-700">Итого в месяц:</span>
-              <p className={`text-lg font-bold ${totalItems >= 5 ? 'text-emerald-600' : 'text-red-500'}`}>
-                {totalItems >= 5 ? '✅ Готово к подписке' : `❌ Нужно еще ${5 - totalItems} товаров`}
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.25em] text-black/60 mb-1">
+                    Итого в месяц
+                  </p>
+                  <p
+                    className={`text-xs uppercase tracking-[0.25em] ${
+                      totalItems >= 5 ? 'text-black/60' : 'text-red-500'
+                    }`}
+                  >
+                    {totalItems >= 5
+                      ? 'Готово к подписке'
+                      : `Нужно ещё ${5 - totalItems} товар(ов)`}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-extrabold">{totalPrice} ₽</p>
+                  <p className="text-[11px] uppercase tracking-[0.25em] text-black/50">
+                    / мес
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={handleSubscription}
+                disabled={totalItems < 5}
+                className={`w-full py-4 border text-xs font-semibold tracking-[0.25em] uppercase flex items-center justify-center gap-2 transition-all ${
+                  totalItems >= 5
+                    ? 'bg-black text-white border-black hover:bg-white hover:text-black'
+                    : 'bg-black/5 text-black/30 border-black/15 cursor-not-allowed'
+                }`}
+              >
+                <FaCheckCircle className="text-[12px]" />
+                <span>Оформить подписку</span>
+              </button>
+            </div>
+
+            <div className="mt-8 border-t border-black/10 pt-4 text-[11px] text-black/60 space-y-1">
+              <p className="flex items-center justify-between">
+                <span className="uppercase tracking-[0.25em]">Доставка</span>
+                <span>1 раз в месяц</span>
+              </p>
+              <p className="flex items-center justify-between">
+                <span className="uppercase tracking-[0.25em]">Стоимость</span>
+                <span>включена в подписку</span>
+              </p>
+              <p className="flex items-center justify-between">
+                <span className="uppercase tracking-[0.25em]">Изменения</span>
+                <span>коробку можно редактировать каждый месяц</span>
               </p>
             </div>
-            <span className="text-4xl font-black text-emerald-800">{totalPrice} ₽/мес</span>
-          </div>
-          
-          <button
-            onClick={handleSubscription}
-            disabled={totalItems < 5}
-            className={`w-full py-4 rounded-xl font-black text-xl flex items-center justify-center space-x-2 transition-all ${
-              totalItems >= 5
-                ? 'bg-yellow-400 text-emerald-800 hover:bg-yellow-300'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            <FaCheckCircle />
-            <span>Оформить подписку</span>
-          </button>
-
-          <div className="mt-6 text-center text-emerald-600">
-            <p>📦 Доставка каждый месяц</p>
-            <p className="text-sm">🚚 Бесплатно по России</p>
-          </div>
+          </section>
         </div>
       </div>
     </motion.div>

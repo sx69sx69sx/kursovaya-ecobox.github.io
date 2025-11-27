@@ -1,56 +1,93 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  FaShieldAlt, 
-  FaLock, 
-  FaUser, 
-  FaFileAlt, 
-  FaCookie, 
+import {
+  FaShieldAlt,
+  FaLock,
+  FaUser,
+  FaFileAlt,
+  FaCookie,
   FaExclamationTriangle,
-  FaCheckCircle 
+  FaCheckCircle
 } from 'react-icons/fa';
 
 const Privacy = () => {
   return (
-    <div className="min-h-screen bg-emerald-50 py-20">
-      <div className="max-w-5xl mx-auto px-6">
-        {/* ЗАГОЛОВОК */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold text-emerald-800 mb-4">
-            Политика конфиденциальности
-          </h1>
-          <p className="text-xl text-emerald-600 max-w-3xl mx-auto">
-            Последнее обновление: <strong>22 октября 2025</strong>
-          </p>
-        </div>
-
-        {/* ВВЕДЕНИЕ */}
-        <section className="bg-white rounded-2xl p-8 shadow-lg mb-12">
-          <div className="flex items-start space-x-4 mb-6">
-            <FaShieldAlt className="text-3xl text-emerald-500 mt-1" />
-            <h2 className="text-3xl font-bold text-emerald-800">1. Общие положения</h2>
+    <div className="min-h-screen bg-white text-black">
+      {/* HEADER / ХЛЕБНЫЕ КРОШКИ */}
+      <header className="border-b border-black/10">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3 text-xs">
+            <Link
+              to="/"
+              className="uppercase tracking-[0.25em] text-black/60 hover:text-black transition-colors flex items-center"
+            >
+              <span className="mr-2 text-[10px]">←</span>
+              Главная
+            </Link>
+            <span className="text-black/30">/</span>
+            <span className="uppercase tracking-[0.25em] text-black">
+              Политика
+            </span>
           </div>
-          <div className="space-y-4 text-emerald-700 leading-relaxed">
-            <p>
-              ООО "ЭкоБокс" (далее — <strong>Оператор</strong>) уважает конфиденциальность пользователей 
-              и обязуется защищать их персональные данные в соответствии с Федеральным законом 
-              от 27.07.2006 № 152-ФЗ "О персональных данных" и GDPR (EU) 2016/679.
+          <div className="hidden md:block text-[11px] uppercase tracking-[0.3em] text-black/50">
+            Экологичные товары по подписке
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto px-6 py-12">
+        {/* ЗАГОЛОВОК */}
+        <section className="border-b border-black/10 pb-10 mb-10 text-center">
+          <p className="text-[11px] uppercase tracking-[0.3em] text-black/50 mb-3">
+            Политика конфиденциальности
+          </p>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight uppercase mb-3">
+            Обработка персональных данных
+          </h1>
+          <p className="text-sm md:text-base text-black/60">
+            Последнее обновление: <span className="font-semibold">22 октября 2025</span>
+          </p>
+        </section>
+
+        {/* 1. ОБЩИЕ ПОЛОЖЕНИЯ */}
+        <section className="border border-black/10 px-6 py-6 mb-8 text-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <FaShieldAlt className="text-sm" />
+            <p className="text-xs uppercase tracking-[0.25em]">
+              1. Общие положения
             </p>
-            <p><strong>Дата вступления в силу:</strong> 22 октября 2025</p>
-            <p><strong>Контакты:</strong> privacy@ecobox.ru | +7 (495) 123-45-67</p>
+          </div>
+          <div className="space-y-3 text-[13px] leading-relaxed">
+            <p>
+              ООО «ЭкоБокс» (далее — <span className="font-semibold">Оператор</span>) уважает
+              конфиденциальность пользователей и обрабатывает персональные данные в соответствии
+              с Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных» и
+              применимыми нормами законодательства о защите данных.
+            </p>
+            <p>
+              <span className="font-semibold">Дата вступления в силу:</span> 22 октября 2025.
+            </p>
+            <p>
+              <span className="font-semibold">Контакты для вопросов по данным:</span>{' '}
+              privacy@ecobox.ru • +7 (495) 123-45-67.
+            </p>
           </div>
         </section>
 
-        {/* 2. ПЕРСОНАЛЬНЫЕ ДАННЫЕ */}
-        <section className="bg-white rounded-2xl p-8 shadow-lg mb-12">
-          <div className="flex items-start space-x-4 mb-6">
-            <FaUser className="text-3xl text-emerald-500 mt-1" />
-            <h2 className="text-3xl font-bold text-emerald-800">2. Какие данные мы собираем</h2>
+        {/* 2. КАКИЕ ДАННЫЕ МЫ СОБИРАЕМ */}
+        <section className="border border-black/10 px-6 py-6 mb-8 text-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <FaUser className="text-sm" />
+            <p className="text-xs uppercase tracking-[0.25em]">
+              2. Какие данные мы собираем
+            </p>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <h3 className="font-semibold text-emerald-700 mb-3">Обязательные данные:</h3>
-              <ul className="space-y-2 text-emerald-600">
+              <p className="text-[11px] uppercase tracking-[0.25em] text-black/60 mb-2">
+                Обязательные данные
+              </p>
+              <ul className="text-[13px] space-y-1">
                 <li>• ФИО</li>
                 <li>• Email</li>
                 <li>• Номер телефона</li>
@@ -58,129 +95,206 @@ const Privacy = () => {
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-emerald-700 mb-3">Дополнительные данные:</h3>
-              <ul className="space-y-2 text-emerald-600">
-                <li>• Предпочтения товаров</li>
-                <li>• История заказов</li>
-                <li>• IP-адрес</li>
-                <li>• Cookies</li>
+              <p className="text-[11px] uppercase tracking-[0.25em] text-black/60 mb-2">
+                Дополнительные данные
+              </p>
+              <ul className="text-[13px] space-y-1">
+                <li>• Предпочтения по товарам и категориям</li>
+                <li>• История заказов и подписок</li>
+                <li>• Технические данные (IP-адрес, тип устройства, браузер)</li>
+                <li>• Файлы cookie и аналогичные технологии</li>
               </ul>
             </div>
           </div>
         </section>
 
-        {/* 3. ЦЕЛИ СОБИРАНИЯ */}
-        <section className="bg-white rounded-2xl p-8 shadow-lg mb-12">
-          <div className="flex items-start space-x-4 mb-6">
-            <FaFileAlt className="text-3xl text-emerald-500 mt-1" />
-            <h2 className="text-3xl font-bold text-emerald-800">3. Цели обработки данных</h2>
+        {/* 3. ЦЕЛИ ОБРАБОТКИ */}
+        <section className="border border-black/10 px-6 py-6 mb-8 text-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <FaFileAlt className="text-sm" />
+            <p className="text-xs uppercase tracking-[0.25em]">
+              3. Цели обработки данных
+            </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-4 text-[13px]">
             {[
-              { icon: <FaLock className="text-2xl" />, title: 'Оформление заказов', desc: 'Доставка коробок' },
-              { icon: <FaCheckCircle className="text-2xl" />, title: 'Улучшение сервиса', desc: 'Персонализация' },
-              { icon: <FaShieldAlt className="text-2xl" />, title: 'Безопасность', desc: 'Защита от мошенников' }
+              {
+                icon: <FaLock className="text-xs" />,
+                title: 'Оформление и доставка заказов',
+                desc: 'Обработка заказов, подписок и уведомлений о статусе.'
+              },
+              {
+                icon: <FaCheckCircle className="text-xs" />,
+                title: 'Улучшение сервиса',
+                desc: 'Персональные рекомендации и анализ интереса к товарам.'
+              },
+              {
+                icon: <FaShieldAlt className="text-xs" />,
+                title: 'Безопасность',
+                desc: 'Предотвращение мошенничества и несанкционированного доступа.'
+              }
             ].map((item, i) => (
-              <div key={i} className="text-center p-4 border rounded-xl">
-                <div className="text-emerald-500 mb-2">{item.icon}</div>
-                <h3 className="font-semibold text-emerald-700 mb-1">{item.title}</h3>
-                <p className="text-sm text-emerald-600">{item.desc}</p>
+              <div key={i} className="border border-black/10 px-4 py-4">
+                <div className="flex items-center gap-2 mb-2">
+                  {item.icon}
+                  <p className="text-[11px] uppercase tracking-[0.2em]">
+                    {item.title}
+                  </p>
+                </div>
+                <p className="text-black/70">{item.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* 4. COOKIES */}
-        <section className="bg-white rounded-2xl p-8 shadow-lg mb-12">
-          <div className="flex items-start space-x-4 mb-6">
-            <FaCookie className="text-3xl text-emerald-500 mt-1" />
-            <h2 className="text-3xl font-bold text-emerald-800">4. Cookies</h2>
-          </div>
-          <div className="space-y-4">
-            <p className="text-emerald-700">
-              Мы используем cookies для улучшения работы сайта. Вы можете управлять настройками в браузере.
+        <section className="border border-black/10 px-6 py-6 mb-8 text-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <FaCookie className="text-sm" />
+            <p className="text-xs uppercase tracking-[0.25em]">
+              4. Файлы cookie
             </p>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-emerald-50 p-4 rounded-lg">
-                <h4 className="font-semibold">Необходимые</h4>
-                <p className="text-sm">Сохранение корзины, авторизация</p>
+          </div>
+          <div className="space-y-3 text-[13px]">
+            <p>
+              Мы используем cookie и аналогичные технологии для работы сайта, аналитики и
+              персонализации. Вы можете ограничить или отключить использование cookie в настройках
+              браузера — в этом случае часть функций сайта может быть недоступна.
+            </p>
+            <div className="grid md:grid-cols-2 gap-3">
+              <div className="border border-black/10 px-4 py-3">
+                <p className="text-[11px] uppercase tracking-[0.2em] mb-1">
+                  Необходимые
+                </p>
+                <p className="text-black/70 text-[13px]">
+                  Обеспечивают работу корзины, авторизацию и базовые функции сайта.
+                </p>
               </div>
-              <div className="bg-emerald-50 p-4 rounded-lg">
-                <h4 className="font-semibold">Аналитика</h4>
-                <p className="text-sm">Google Analytics (анонимно)</p>
+              <div className="border border-black/10 px-4 py-3">
+                <p className="text-[11px] uppercase tracking-[0.2em] mb-1">
+                  Аналитика и статистика
+                </p>
+                <p className="text-black/70 text-[13px]">
+                  Помогают понимать, как используется сайт, и улучшать интерфейс. Данные
+                  обрабатываются в обезличенном виде.
+                </p>
               </div>
             </div>
           </div>
         </section>
 
         {/* 5. ПРАВА ПОЛЬЗОВАТЕЛЯ */}
-        <section className="bg-white rounded-2xl p-8 shadow-lg mb-12">
-          <div className="flex items-start space-x-4 mb-6">
-            <FaExclamationTriangle className="text-3xl text-emerald-500 mt-1" />
-            <h2 className="text-3xl font-bold text-emerald-800">5. Ваши права</h2>
+        <section className="border border-black/10 px-6 py-6 mb-8 text-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <FaExclamationTriangle className="text-sm" />
+            <p className="text-xs uppercase tracking-[0.25em]">
+              5. Ваши права
+            </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            <ul className="space-y-3 text-emerald-700">
-              <li><strong>Доступ:</strong> Запросить копию данных</li>
-              <li><strong>Исправление:</strong> Уточнить некорректные данные</li>
-              <li><strong>Удаление:</strong> "Право быть забытым"</li>
+          <div className="grid md:grid-cols-2 gap-6 text-[13px]">
+            <ul className="space-y-2">
+              <li>
+                <span className="font-semibold">Доступ.</span> Вы можете запросить копию
+                хранящихся у нас персональных данных.
+              </li>
+              <li>
+                <span className="font-semibold">Исправление.</span> Вы вправе уточнить или
+                обновить свои данные, если они устарели или неверны.
+              </li>
+              <li>
+                <span className="font-semibold">Удаление.</span> В ряде случаев вы можете
+                запросить удаление данных («право быть забытым»), если это не противоречит
+                законодательству.
+              </li>
             </ul>
-            <ul className="space-y-3 text-emerald-700">
-              <li><strong>Ограничение:</strong> Остановить обработку</li>
-              <li><strong>Переносимость:</strong> Получить данные в формате</li>
-              <li><strong>Жалоба:</strong> В Роскомнадзор</li>
+            <ul className="space-y-2">
+              <li>
+                <span className="font-semibold">Ограничение обработки.</span> Вы можете
+                временно ограничить обработку данных.
+              </li>
+              <li>
+                <span className="font-semibold">Переносимость.</span> Мы можем подготовить
+                данные в машиночитаемом формате по вашему запросу.
+              </li>
+              <li>
+                <span className="font-semibold">Жалоба.</span> Вы имеете право обратиться с
+                жалобой в уполномоченный орган по защите прав субъектов персональных данных.
+              </li>
             </ul>
           </div>
         </section>
 
         {/* 6. БЕЗОПАСНОСТЬ */}
-        <section className="bg-white rounded-2xl p-8 shadow-lg mb-12">
-          <h2 className="text-3xl font-bold text-emerald-800 mb-6">6. Безопасность данных</h2>
-          <div className="grid md:grid-cols-4 gap-4">
+        <section className="border border-black/10 px-6 py-6 mb-8 text-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <FaLock className="text-sm" />
+            <p className="text-xs uppercase tracking-[0.25em]">
+              6. Безопасность данных
+            </p>
+          </div>
+          <div className="grid md:grid-cols-4 gap-3 text-[13px]">
             {[
-              'SSL шифрование',
-              '2FA аутентификация', 
-              'Регулярные аудиты',
-              'Хранение в РФ'
+              'Используем шифрование (HTTPS/SSL).',
+              'Ограничиваем доступ к данным внутри компании.',
+              'Регулярно обновляем программное обеспечение.',
+              'Храним данные на серверах в соответствии с требованиями законодательства.'
             ].map((item, i) => (
-              <div key={i} className="flex items-center space-x-2 p-3 bg-emerald-50 rounded-lg">
-                <FaCheckCircle className="text-emerald-500" />
-                <span className="text-emerald-700">{item}</span>
+              <div
+                key={i}
+                className="border border-black/10 px-3 py-3 flex items-start gap-2"
+              >
+                <FaCheckCircle className="text-[11px] mt-[2px]" />
+                <span className="text-black/80">{item}</span>
               </div>
             ))}
           </div>
         </section>
 
-        {/* 7. КОНТАКТЫ */}
-        <section className="bg-emerald-800 text-white rounded-2xl p-8">
-          <h2 className="text-3xl font-bold mb-6">Свяжитесь с нами</h2>
-          <div className="grid md:grid-cols-3 gap-6 text-center">
-            <div>
-              <p className="text-emerald-200 mb-2">Email</p>
-              <p className="font-bold">privacy@ecobox.ru</p>
+        {/* 7. КОНТАКТЫ ПО ВОПРОСАМ ДАННЫХ */}
+        <section className="border border-black/10 px-6 py-6 mb-10 text-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <FaShieldAlt className="text-sm" />
+            <p className="text-xs uppercase tracking-[0.25em]">
+              7. Контакты по вопросам конфиденциальности
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-4 text-[13px]">
+            <div className="border border-black/10 px-4 py-3">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-black/60 mb-1">
+                Email
+              </p>
+              <p className="font-semibold">privacy@ecobox.ru</p>
             </div>
-            <div>
-              <p className="text-emerald-200 mb-2">Телефон</p>
-              <p className="font-bold">+7 (495) 123-45-67</p>
+            <div className="border border-black/10 px-4 py-3">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-black/60 mb-1">
+                Телефон
+              </p>
+              <p className="font-semibold">+7 (495) 123-45-67</p>
             </div>
-            <div>
-              <p className="text-emerald-200 mb-2">Адрес</p>
-              <p className="font-bold">Москва, ул. Эко, 1</p>
+            <div className="border border-black/10 px-4 py-3">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-black/60 mb-1">
+                Почтовый адрес
+              </p>
+              <p className="font-semibold">ул. Малая Дмитровка, 15, Москва, Россия, 127006</p>
             </div>
           </div>
+          <p className="text-[11px] text-black/50 mt-2">
+            При обращении по вопросам обработки данных, пожалуйста, указывайте тему
+            «Персональные данные».
+          </p>
         </section>
 
         {/* НАВИГАЦИЯ */}
-        <div className="mt-12 text-center">
-          <Link 
+        <section className="pb-6 text-center">
+          <Link
             to="/"
-            className="inline-flex items-center space-x-2 bg-emerald-600 text-white px-6 py-3 rounded-full hover:bg-emerald-700"
+            className="inline-flex items-center justify-center px-10 py-4 border border-black text-xs font-semibold uppercase tracking-[0.25em] hover:bg-black hover:text-white transition-colors"
           >
-            <FaShieldAlt />
-            <span>Вернуться на главную</span>
+            <FaShieldAlt className="text-[12px] mr-2" />
+            Вернуться на главную
           </Link>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 };

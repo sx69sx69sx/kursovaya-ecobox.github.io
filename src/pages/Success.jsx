@@ -1,336 +1,387 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { toast } from 'react-hot-toast';
-import { useAuth } from '../context/AuthContext';
-import { 
-  FaCheckCircle, FaBox, FaTruck, FaCrown, FaCalendarAlt, 
-  FaStar, FaGift, FaUsers, FaLeaf, FaArrowLeft, FaDownload,
-  FaFileInvoice, FaShieldAlt, FaClock, FaSpinner, FaUser, 
-  FaSignInAlt, FaUserPlus
-} from 'react-icons/fa';
+// Success.jsx — обновлённая версия с PDF-чеком и QR-кодом
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { toast } from "react-hot-toast";
+import jsPDF from "jspdf";
+import QRCode from "qrcode";
+
+import {
+  FaArrowLeft,
+  FaCheckCircle,
+  FaCrown,
+  FaTruck,
+  FaBox,
+  FaStar,
+  FaGift,
+  FaUsers,
+  FaShieldAlt,
+  FaCalendarAlt,
+  FaDownload,
+  FaFileInvoice,
+  FaUser,
+  FaLeaf,
+} from "react-icons/fa";
+
+import { useAuth } from "../context/AuthContext";
 
 const Success = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
   const { user, createSubscription } = useAuth();
-  
-  const { state } = location;
+
+  const state = location.state;
+
+  const planData =
+    state || {
+      plan: "Популярная",
+      price: 1611,
+      items: 5,
+      name: "Иванов Иван",
+      phone: "+7 (999) 123-45-67",
+      city: "Москва",
+      address: "ул. Ленина, д. 5",
+    };
+
   const [countdown, setCountdown] = useState(7);
 
-  // ✅ ДАННЫЕ ПОДПИСКИ
-  const planData = state || {
-    plan: 'Популярная',
-    price: 1611,
-    items: 5,
-    name: 'Иванов Иван',
-    phone: '+7 (999) 123-45-67',
-    city: 'Москва',
-    address: 'ул. Ленина, д. 5'
-  };
+  // ✔ Только одно уведомление
+  useEffect(() => {
+    toast.success("Ваша подписка успешно оформлена");
+  }, []);
 
-  // ✅ ЗАЩИТА: НЕАВТОРИЗОВАННЫЙ → LOGIN
+  // ✔ Проверка авторизации + сохранение подписки
   useEffect(() => {
     if (!user) {
-      toast.error('🔒 Авторизуйтесь для сохранения подписки!');
-      navigate('/login', { 
-        state: { 
-          from: '/success', 
-          planData  // ← ДАННЫЕ ПОДПИСКИ ДЛЯ ВОССТАНОВЛЕНИЯ
-        } 
+      navigate("/login", {
+        state: {
+          from: "/success",
+          planData,
+        },
       });
       return;
     }
 
-    // ✅ АВТОРИЗОВАННЫЙ: СОЗДАТЬ ПОДПИСКУ
     if (user && state && !user.subscription) {
-      const success = createSubscription({
+      createSubscription({
         plan: planData.plan,
         price: planData.price,
-        items: planData.items
+        items: planData.items,
       });
-      if (success) {
-        toast.success('🎉 Подписка сохранена в профиле!');
-      }
     }
-  }, [user, state, createSubscription, planData, navigate]);
+  }, [user, state, navigate, createSubscription, planData]);
 
-  // ✅ ЕСЛИ НЕ АВТОРИЗОВАН - ПОКАЗАТЬ ЭКРАН ЛОГИНА
-  if (!user) {
-    return (
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
-        className="min-h-screen bg-gradient-to-br from-emerald-50 via-yellow-50 to-emerald-100 flex items-center justify-center"
-      >
-        <div className="bg-white rounded-2xl p-8 shadow-xl w-full max-w-md text-center">
-          <FaSignInAlt className="text-6xl text-yellow-400 mx-auto mb-4" />
-          <h1 className="text-3xl font-black text-emerald-800 mb-4">Авторизация обязательна!</h1>
-          <p className="text-emerald-600 mb-6">
-            Для сохранения подписки <strong>{planData.plan}</strong> 
-            войдите в аккаунт
-          </p>
-          
-          <div className="space-y-4">
-            <Link 
-              to="/login" 
-              className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-emerald-700 transition-all"
-            >
-              <FaSignInAlt />
-              <span>Войти</span>
-            </Link>
-            
-            <Link 
-              to="/register" 
-              className="w-full bg-yellow-400 text-emerald-800 py-3 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-yellow-300 transition-all"
-            >
-              <FaUserPlus />
-              <span>Регистрация</span>
-            </Link>
-          </div>
-          
-          <p className="text-sm text-gray-500 mt-6">
-            Ваша подписка: {planData.items} товаров за {planData.price} ₽
-          </p>
-        </div>
-      </motion.div>
-    );
-  }
-
-  // COUNTDOWN 7 ДНЕЙ
+  // Таймер до первой доставки
   useEffect(() => {
     if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
+      const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
+      return () => clearTimeout(t);
     }
   }, [countdown]);
 
-  // TOAST
-  useEffect(() => {
-    toast.success('🎉 Подписка успешно оформлена!');
-    toast('📦 Коробка готовится к отправке', { duration: 4000 });
-  }, []);
+const generateReceipt = async () => {
+  const doc = new jsPDF({
+    unit: "mm",
+    format: [58, 230], // узкий чек
+  });
 
-  // ... ВСЁ ОСТАЛЬНОЕ ОСТАЁТСЯ ТАК ЖЕ! ...
-  const confetti = Array.from({ length: 50 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100 - 100,
-    rotation: Math.random() * 360,
-    color: ['#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'][Math.floor(Math.random() * 5)]
-  }));
+  // Моноширинный шрифт, только латиница
+  doc.setFont("courier", "normal");
+  doc.setFontSize(8);
 
+  let y = 6;
+  const left = 4;
+
+  const print = (text = "", align = "left") => {
+    // гарантируем только ASCII-символы
+    text = String(text).replace(/[^\x20-\x7E]/g, "");
+
+    if (align === "center") {
+      const tw = doc.getTextWidth(text);
+      doc.text(text, (58 - tw) / 2, y);
+    } else if (align === "right") {
+      const tw = doc.getTextWidth(text);
+      doc.text(text, 58 - 4 - tw, y);
+    } else {
+      doc.text(text, left, y);
+    }
+    y += 4;
+  };
+
+  const line = () => print("--------------------------------");
+
+  // Дата / время (оставляем цифры и точки — это ASCII)
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2, "0");
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const yyyy = now.getFullYear();
+  const hh = String(now.getHours()).padStart(2, "0");
+  const mi = String(now.getMinutes()).padStart(2, "0");
+  const ss = String(now.getSeconds()).padStart(2, "0");
+
+  const dateStr = `${dd}.${mm}.${yyyy}`;
+  const timeStr = `${hh}:${mi}:${ss}`;
+
+  const total = Number(planData.price || 0).toFixed(2);
+
+  // Строка для QR (формат ФНС, упрощённый)
+  const qrString = `t=${yyyy}${mm}${dd}T${hh}${mi}${ss}&s=${total}&fn=9990000000000&i=123456&fp=987654321&n=1`;
+
+  // Генерация QR
+  const qr = await QRCode.toDataURL(qrString, {
+    margin: 0,
+    width: 200,
+    color: { dark: "#000000", light: "#FFFFFF" },
+  });
+
+  // ---------- ШАПКА ----------
+  print('OOO "ECOBOX"', "center");
+  print("INN 7700000000", "center");
+  print("KKT 0000000001", "center");
+  line();
+
+  print("KASSOVYI CHEK", "center");
+  print("PRIHOD", "center");
+  line();
+
+  print(`DATA:  ${dateStr}`);
+  print(`VREMYA: ${timeStr}`);
+  line();
+
+  // ---------- ТОВАР / УСЛУГА ----------
+  print("1. PODPISKA ECOBOX");
+  print(`1 x ${total} = ${total}`, "right");
+  line();
+
+  // ---------- ИТОГ ----------
+  print(`ITOG: ${total} RUB`, "right");
+  print(`OPLATA KARTOY: ${total}`, "right");
+  print("NDS: BEZ NDS");
+  line();
+
+  // ---------- КРАТКО О ДОСТАВКЕ (БЕЗ КИРИЛЛИЦЫ) ----------
+  print("DOSTAVKA: PO PODPISKE");
+  print("ADRES: SM. LICHNYI KABINET");
+  line();
+
+  // ---------- QR-КОД ----------
+  const qrSize = 30; // мм
+  const qrX = (58 - qrSize) / 2;
+  const qrY = y;
+
+  doc.addImage(qr, "PNG", qrX, qrY, qrSize, qrSize);
+  y = qrY + qrSize + 4;
+
+  print("SPASIBO ZA POKUPKU!", "center");
+
+  doc.save(`EcoBox_Check_${dateStr.replace(/\./g, "-")}.pdf`);
+};
+
+
+  // ================================
+  // UI
+  // ================================
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      className="min-h-screen bg-gradient-to-br from-emerald-50 via-yellow-50 to-emerald-100 overflow-hidden relative"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-neutral-50"
     >
-      {/* КОНФЕТТИ */}
-      {confetti.map((particle, i) => (
-        <motion.div
-          key={particle.id}
-          className="absolute w-2 h-2 rounded-full"
-          style={{ left: `${particle.x}%`, top: `${particle.y}%`, backgroundColor: particle.color }}
-          animate={{ y: [particle.y, particle.y + 200], rotate: [0, 360], opacity: [1, 0] }}
-          transition={{ duration: 3 + Math.random() * 2, delay: i * 0.05, ease: 'easeOut' }}
-        />
-      ))}
-
       {/* HEADER */}
-      <div className="bg-white/90 backdrop-blur-sm shadow-lg">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <Link to="/" className="flex items-center text-emerald-600 mb-6 hover:text-emerald-800">
+      <div className="border-b bg-white">
+        <div className="max-w-5xl mx-auto px-6 py-6">
+          <Link
+            to="/"
+            className="flex items-center text-neutral-600 hover:text-black"
+          >
             <FaArrowLeft className="mr-2" /> На главную
           </Link>
-          <div className="text-center">
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.5 }} className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FaCheckCircle className="text-5xl text-white" />
-            </motion.div>
-            <motion.h1 initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="text-5xl font-black text-emerald-800 mb-4">
-              Подписка оформлена!
-            </motion.h1>
-            <motion.p initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} className="text-xl text-emerald-600 flex justify-center items-center">
-              <FaCrown className="mr-2" /> Добро пожаловать в {planData.plan} клуб!
-            </motion.p>
+        </div>
+      </div>
+
+      {/* TITLE */}
+      <div className="max-w-5xl mx-auto px-6 py-12 text-center">
+        <div className="mx-auto w-20 h-20 flex items-center justify-center border border-black">
+          <FaCheckCircle className="text-4xl text-green-600" />
+        </div>
+
+        <h1 className="mt-6 text-4xl font-black tracking-tight text-neutral-900">
+          Подписка оформлена
+        </h1>
+
+        <p className="mt-2 text-neutral-600">
+          Добро пожаловать в тариф <strong>{planData.plan}</strong>.
+        </p>
+      </div>
+
+      {/* CONTENT */}
+      <div className="max-w-5xl mx-auto px-6 pb-24 grid md:grid-cols-3 gap-10">
+        {/* LEFT 2/3 */}
+        <div className="md:col-span-2 space-y-8">
+          {/* ДЕТАЛИ ПОДПИСКИ */}
+          <div className="border border-black p-8 bg-white">
+            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+              <FaCrown className="text-yellow-500" /> Детали подписки
+            </h2>
+
+            <div className="grid grid-cols-2 gap-6 text-sm">
+              <div>
+                <p className="text-neutral-500">Тариф</p>
+                <p className="font-semibold">{planData.plan}</p>
+              </div>
+
+              <div>
+                <p className="text-neutral-500">Стоимость</p>
+                <p className="font-semibold">{planData.price} ₽ / месяц</p>
+              </div>
+
+              <div>
+                <p className="text-neutral-500">Товаров в коробке</p>
+                <p className="font-semibold">{planData.items}</p>
+              </div>
+
+              <div>
+                <p className="text-neutral-500">Адрес доставки</p>
+                <p className="font-semibold">{planData.address}</p>
+              </div>
+            </div>
+
+            <div className="mt-8 border-t pt-6">
+              <p className="font-semibold text-neutral-700 text-center">
+                Первая доставка через{" "}
+                <span className="text-green-700">
+                  {countdown > 0 ? countdown : 0}
+                </span>{" "}
+                дней
+              </p>
+            </div>
+          </div>
+
+          {/* ЧТО ВХОДИТ */}
+          <div className="border border-black p-8 bg-white">
+            <h2 className="text-xl font-bold mb-6">Что входит</h2>
+
+            <div className="space-y-4 text-sm">
+              <div className="flex items-center gap-3">
+                <FaBox /> {planData.items} экологичных товаров
+              </div>
+
+              <div className="flex items-center gap-3">
+                <FaTruck /> Бесплатная доставка по России
+              </div>
+
+              <div className="flex items-center gap-3">
+                <FaGift /> Ежемесячные бонусы и сюрпризы
+              </div>
+
+              <div className="flex items-center gap-3">
+                <FaShieldAlt /> 14 дней на обращение по качеству
+              </div>
+
+              <div className="flex items-center gap-3">
+                <FaCalendarAlt /> Автоматическое продление подписки
+              </div>
+            </div>
+          </div>
+
+          {/* ОТЗЫВЫ / СОЦДОКАЗАТЕЛЬСТВО */}
+          <div className="border border-black p-8 bg-white">
+            <h2 className="text-xl font-bold mb-6">Мнение клиентов</h2>
+            <div className="grid md:grid-cols-3 gap-4 text-sm">
+              {[
+                {
+                  author: "Анна, Москва",
+                  text: "Коробка всегда аккуратная и без лишнего пластика.",
+                },
+                {
+                  author: "Дмитрий, СПБ",
+                  text: "Не думаю о покупках бытовой химии — всё приходит само.",
+                },
+                {
+                  author: "Елена, Казань",
+                  text: "Минимализм, экология и подписка — идеальное сочетание.",
+                },
+              ].map((r, i) => (
+                <div key={i} className="border border-black/20 p-4">
+                  <div className="flex items-center mb-2">
+                    {[...Array(5)].map((_, j) => (
+                      <FaStar key={j} className="text-[10px]" />
+                    ))}
+                  </div>
+                  <p className="mb-2 text-neutral-700">"{r.text}"</p>
+                  <p className="text-xs text-neutral-500">{r.author}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT 1/3 */}
+        <div className="space-y-6">
+          {/* PRICE BLOCK */}
+          <div className="border border-black p-8 bg-white text-center">
+            <div className="text-4xl font-black">{planData.price}</div>
+            <p className="text-neutral-500">₽ / месяц</p>
+          </div>
+
+          {/* BUTTONS */}
+          <div className="space-y-3">
+            <Link
+              to="/profile"
+              className="block w-full border border-black text-center py-3 font-bold text-sm tracking-[0.15em] hover:bg-black hover:text-white transition-colors"
+            >
+              <FaUser className="inline mr-2" />
+              ЛИЧНЫЙ КАБИНЕТ
+            </Link>
+
+            <button
+              onClick={generateReceipt}
+              className="block w-full border border-black text-center py-3 font-bold text-sm tracking-[0.15em] hover:bg-black hover:text-white transition-colors"
+            >
+              <FaDownload className="inline mr-2" />
+              СКАЧАТЬ ЧЕК (PDF)
+            </button>
+
+            <Link
+              to="/subscription/manage"
+              className="block w-full border border-black text-center py-3 font-bold text-sm tracking-[0.15em] hover:bg-black hover:text-white transition-colors"
+            >
+              <FaFileInvoice className="inline mr-2" />
+              УПРАВЛЕНИЕ ПОДПИСКОЙ
+            </Link>
+          </div>
+
+          {/* ECO MESSAGE */}
+          <div className="border border-black bg-neutral-50 p-4 text-center text-sm">
+            <FaLeaf className="text-green-700 mx-auto mb-2" />
+            <p className="text-neutral-700">
+              Каждый месяц ваша подписка помогает сократить одноразовый пластик.
+            </p>
+          </div>
+
+          {/* STATS */}
+          <div className="border border-black bg-white p-6 text-center text-sm">
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <FaUsers className="mx-auto mb-1" />
+                <p className="text-xs text-neutral-500">клиентов</p>
+                <p className="font-semibold">10 000+</p>
+              </div>
+              <div>
+                <FaStar className="mx-auto mb-1" />
+                <p className="text-xs text-neutral-500">рейтинг</p>
+                <p className="font-semibold">4.9</p>
+              </div>
+              <div>
+                <FaBox className="mx-auto mb-1" />
+                <p className="text-xs text-neutral-500">коробок в месяц</p>
+                <p className="font-semibold">5000+</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* ... ВСЁ ОСТАЛЬНОЕ ОСТАЁТСЯ БЕЗ ИЗМЕНЕНИЙ ... */}
-      <div className="max-w-6xl mx-auto px-6 py-12">
-        <div className="grid lg:grid-cols-3 gap-12">
-          {/* ОСНОВНАЯ ИНФО */}
-          <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }} className="lg:col-span-2 space-y-8">
-            {/* ДЕТАЛИ ПОДПИСКИ */}
-            <div className="bg-white rounded-2xl p-8 shadow-xl">
-              <h3 className="text-2xl font-bold text-emerald-800 mb-6 flex items-center">
-                <FaCrown className="mr-2 text-yellow-400" /> Ваша подписка
-              </h3>
-              <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div className="space-y-2"><span className="text-emerald-600 font-semibold">Тариф:</span><span className="text-2xl font-black text-emerald-800">{planData.plan}</span></div>
-                <div className="space-y-2"><span className="text-emerald-600 font-semibold">Стоимость:</span><span className="text-2xl font-black text-emerald-800">{planData.price} ₽/мес</span></div>
-                <div className="space-y-2"><span className="text-emerald-600 font-semibold">Товаров:</span><span className="text-2xl font-black text-emerald-800">{planData.items}</span></div>
-                <div className="space-y-2"><span className="text-emerald-600 font-semibold">Доставка:</span><span className="text-2xl font-black text-emerald-800">{planData.address}</span></div>
-              </div>
-
-              {/* ПРОГРЕСС + COUNTDOWN (ОСТАЁТСЯ БЕЗ ИЗМЕНЕНИЙ) */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-gradient-to-r from-yellow-50 to-emerald-50 p-6 rounded-xl border-2 border-yellow-200"
-              >
-                <div className="flex items-center justify-center space-x-3 mb-6">
-                  <motion.div 
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
-                    className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg"
-                  >
-                    <FaSpinner className="text-xl text-white animate-spin" />
-                  </motion.div>
-                  <span className="text-xl font-bold text-yellow-800">Статус: Готовим коробку</span>
-                </div>
-                
-                <div className="relative mb-6">
-                  <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-                    <motion.div 
-                      className="h-full bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: "33%" }}
-                      transition={{ duration: 2, ease: "easeOut" }}
-                    />
-                  </div>
-                  <div className="absolute -top-2 left-0 w-full flex justify-between text-xs text-gray-500">
-                    <span className="font-bold text-yellow-600">Готовим</span>
-                    <span>В пути</span>
-                    <span>Доставлено</span>
-                  </div>
-                </div>
-                
-                <div className="flex justify-between items-center mb-6">
-                  <motion.div className="flex flex-col items-center flex-1" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-                    <div className="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center shadow-md mb-1 animate-pulse">
-                      <FaSpinner className="text-sm animate-spin" />
-                    </div>
-                    <span className="text-xs font-bold text-yellow-600">Готовим</span>
-                  </motion.div>
-                  
-                  <div className="flex flex-col items-center flex-1">
-                    <div className="w-10 h-10 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center shadow-md mb-1">
-                      <FaTruck className="text-sm" />
-                    </div>
-                    <span className="text-xs text-gray-500">В пути</span>
-                  </div>
-                  
-                  <div className="flex flex-col items-center flex-1">
-                    <div className="w-10 h-10 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center shadow-md mb-1">
-                      <FaCheckCircle className="text-sm" />
-                    </div>
-                    <span className="text-xs text-gray-500">Доставлено</span>
-                  </div>
-                </div>
-
-                <motion.div 
-                  className="text-center"
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 1 }}
-                >
-                  <div className="flex items-center justify-center space-x-2 text-yellow-700 mb-2">
-                    <FaClock className="text-xl animate-pulse" />
-                    <span className="text-lg font-bold">
-                      Первая доставка через <span className="text-2xl text-yellow-600">{countdown}</span> дней
-                    </span>
-                  </div>
-                  <motion.div 
-                    className="inline-flex items-center px-6 py-2 bg-yellow-100 text-yellow-800 rounded-full shadow-lg font-bold"
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <FaTruck className="mr-2 animate-bounce" />
-                    <span>СЛЕДИ ЗА СТАТУСОМ</span>
-                  </motion.div>
-                </motion.div>
-              </motion.div>
-            </div>
-
-            {/* ПРЕИМУЩЕСТВА (ОСТАЁТСЯ БЕЗ ИЗМЕНЕНИЙ) */}
-            <div className="bg-white rounded-2xl p-8 shadow-xl">
-              <h3 className="text-2xl font-bold text-emerald-800 mb-6">Что вас ждет</h3>
-              <div className="grid md:grid-cols-3 gap-6">
-                {[
-                  { icon: FaBox, text: `${planData.items} эксклюзивных товаров`, color: 'emerald' },
-                  { icon: FaTruck, text: 'Бесплатная доставка по России', color: 'yellow' },
-                  { icon: FaGift, text: 'Ежемесячные сюрпризы', color: 'purple' },
-                  { icon: FaShieldAlt, text: '14 дней на возврат', color: 'blue' },
-                  { icon: FaCalendarAlt, text: 'Автопродление', color: 'green' },
-                  { icon: FaStar, text: 'Персональные рекомендации', color: 'orange' }
-                ].map((item, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 + i * 0.1 }} className="flex items-center space-x-3 p-4 bg-gradient-to-r from-white to-emerald-50 rounded-xl">
-                    <item.icon className={`text-2xl text-${item.color}-500`} />
-                    <span className="font-semibold text-emerald-700">{item.text}</span>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* ПРАВАЯ КОЛОНКА (ОСТАЁТСЯ БЕЗ ИЗМЕНЕНИЙ) */}
-          <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.5 }} className="space-y-6 sticky top-20">
-            <div className="bg-gradient-to-r from-emerald-600 to-yellow-500 text-white rounded-2xl p-8 text-center shadow-xl">
-              <div className="text-4xl font-black mb-2">{planData.price}</div>
-              <div className="text-lg">₽/месяц</div>
-              <div className="text-sm opacity-90 mt-2">Автоплатеж</div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 shadow-xl">
-              <h4 className="text-lg font-bold text-emerald-800 mb-4 text-center">Статистика</h4>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div><FaUsers className="text-2xl text-emerald-500 mx-auto mb-1" /><div className="font-bold text-emerald-600">10 000+</div><div className="text-xs text-gray-500">клиентов</div></div>
-                <div><FaStar className="text-2xl text-yellow-400 mx-auto mb-1" /><div className="font-bold text-emerald-600">4.9</div><div className="text-xs text-gray-500">рейтинг</div></div>
-                <div><FaBox className="text-2xl text-emerald-500 mx-auto mb-1" /><div className="font-bold text-emerald-600">5000+</div><div className="text-xs text-gray-500">коробок/мес</div></div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 shadow-xl space-y-4">
-              <Link to="/profile" className="w-full bg-emerald-600 text-white py-3 rounded-xl flex items-center justify-center space-x-2 font-bold hover:bg-emerald-700 transition-all">
-                <FaUser className="text-sm" /><span>Личный кабинет</span>
-              </Link>
-              <button onClick={() => window.print()} className="w-full bg-yellow-400 text-emerald-800 py-3 rounded-xl flex items-center justify-center space-x-2 font-bold hover:bg-yellow-300 transition-all">
-                <FaDownload className="text-sm" /><span>Скачать чек</span>
-              </button>
-              <Link to="/subscription/manage" className="w-full bg-gray-100 text-emerald-700 py-3 rounded-xl flex items-center justify-center space-x-2 font-bold hover:bg-gray-200 transition-all">
-                <FaFileInvoice className="text-sm" /><span>Управление подпиской</span>
-              </Link>
-            </div>
-
-            <div className="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-4 text-center">
-              <FaLeaf className="text-2xl text-emerald-500 mx-auto mb-2" />
-              <p className="text-sm text-emerald-700">Спасибо за выбор экологии! 🌱</p>
-              <p className="text-xs text-emerald-600 mt-1">Каждый месяц вы помогаете планете</p>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* ОТЗЫВЫ (ОСТАЁТСЯ БЕЗ ИЗМЕНЕНИЙ) */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="max-w-4xl mx-auto px-6 py-16">
-        <h2 className="text-3xl font-bold text-emerald-800 text-center mb-12">Первые впечатления</h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          {[
-            { author: 'Анна, Москва', text: 'Только оформила! Уже жду первую коробку!', rating: 5 },
-            { author: 'Дмитрий, СПб', text: 'Простое оформление, супер сервис!', rating: 5 },
-            { author: 'Елена, Казань', text: 'Эко-подписка мечты! Обожаю!', rating: 5 }
-          ].map((review, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 + i * 0.1 }} className="bg-white p-6 rounded-2xl shadow-lg">
-              <div className="flex items-center mb-3">{[...Array(review.rating)].map((_, j) => <FaStar key={j} className="text-yellow-400" />)}</div>
-              <p className="text-emerald-700 italic mb-4">"{review.text}"</p>
-              <p className="font-semibold text-emerald-800">{review.author}</p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
     </motion.div>
   );
 };

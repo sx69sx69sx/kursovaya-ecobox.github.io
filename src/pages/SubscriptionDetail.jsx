@@ -2,123 +2,229 @@ import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-hot-toast';
-import { 
-  FaBox, FaCrown, FaCheckCircle, FaTruck, FaLeaf, FaCreditCard, 
-  FaShieldAlt, FaStar, FaArrowLeft, FaCalendarAlt, FaGift, FaUsers, 
-  FaCheck, FaMapMarkerAlt, FaLock, FaUser, FaPhone, FaExclamationTriangle
+import {
+  FaBox,
+  FaCrown,
+  FaCheckCircle,
+  FaTruck,
+  FaCreditCard,
+  FaShieldAlt,
+  FaArrowLeft,
+  FaCalendarAlt,
+  FaExclamationTriangle,
+  FaMapMarkerAlt,
+  FaLock,
+  FaUser,
+  FaPhone,
+  FaCheck
 } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 
 const PLANS = {
-  basic: { id: 'basic', title: 'Базовая', price: 990, originalPrice: 1490, features: ['📦 5 товаров/мес','🚚 Бесплатная доставка','♻️ Эко-упаковка','🔄 Пауза/отмена','📞 Поддержка 24/7'], popular: false, badge: 'СТАРТ' },
-  popular: { id: 'popular', title: 'Популярная', price: 1611, originalPrice: 2290, features: ['📦 8 товаров/мес','🚚 Бесплатная доставка','♻️ Эко-упаковка','🎁 Бонусный товар','🔄 Пауза/отмена','📞 Поддержка 24/7','⭐ Персональные рекомендации'], popular: true, badge: 'ХИТ' },
-  premium: { id: 'premium', title: 'Премиум', price: 1990, originalPrice: 2990, features: ['📦 12 товаров/мес','🚚 Бесплатная доставка','♻️ Эко-упаковка','🎁 2 бонусных товара','🔄 Пауза/отмена','📞 Поддержка 24/7','⭐ Персональные рекомендации','👑 VIP-менеджер','💝 Подарок на день рождения'], popular: true, badge: 'PREMIUM' }
+  basic: {
+    id: 'basic',
+    title: 'Базовая',
+    price: 990,
+    originalPrice: 1490,
+    features: [
+      '5 эко-товаров в месяц',
+      'Бесплатная доставка',
+      'Эко-упаковка',
+      'Пауза / отмена в любой момент',
+      'Поддержка'
+    ],
+    badge: 'СТАРТ'
+  },
+  popular: {
+    id: 'popular',
+    title: 'Популярная',
+    price: 1611,
+    originalPrice: 2290,
+    features: [
+      '8 отобранных эко-товаров',
+      'Бесплатная доставка',
+      'Эко-упаковка',
+      'Бонусный продукт в каждой коробке',
+      'Пауза / отмена',
+      'Поддержка',
+      'Персональные рекомендации'
+    ],
+    badge: 'ХИТ'
+  },
+  premium: {
+    id: 'premium',
+    title: 'Премиум',
+    price: 1990,
+    originalPrice: 2990,
+    features: [
+      '12 премиальных эко-товаров',
+      'Бесплатная ч/б-упаковка',
+      '2 бонусных продукта',
+      'Пауза / отмена',
+      'Приоритетная поддержка',
+      'Персональные рекомендации',
+      'Персональный менеджер',
+      'Подарок на день рождения'
+    ],
+    badge: 'PREMIUM'
+  }
 };
 
-const CITIES = ['Москва', 'Санкт-Петербург', 'Новосибирск', 'Екатеринбург', 'Казань', 'Нижний Новгород', 'Челябинск', 'Самара', 'Омск', 'Ростов-на-Дону', 'Уфа', 'Красноярск', 'Воронеж', 'Пермь', 'Волгоград'];
+const CITIES = [
+  'Москва',
+  'Санкт-Петербург',
+  'Новосибирск',
+  'Екатеринбург',
+  'Казань',
+  'Нижний Новгород',
+  'Челябинск',
+  'Самара',
+  'Омск',
+  'Ростов-на-Дону',
+  'Уфа',
+  'Красноярск',
+  'Воронеж',
+  'Пермь',
+  'Волгоград'
+];
 
 const SubscriptionDetail = () => {
   const { plan } = useParams();
   const navigate = useNavigate();
   const { state, dispatch } = useCart();
-  
+
   const selectedPlan = PLANS[plan] || PLANS.popular;
+
   const totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const totalPrice = state.items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
   const subscriptionPrice = totalItems >= 5 ? totalPrice : selectedPlan.price;
 
-  // ФОРМА + СТРОГАЯ ВАЛИДАЦИЯ
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(1); // 1 — адрес, 2 — оплата
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
-    name: '', phone: '', city: '', address: '',
-    cardNumber: '', expiry: '', cvv: ''
+    name: '',
+    phone: '',
+    city: '',
+    address: '',
+    cardNumber: '',
+    expiry: '',
+    cvv: ''
   });
 
-  // СТРОКАЯ ВАЛИДАЦИЯ ПОЛЯ
-  const validateField = (name, value) => {
-    const newErrors = { ...errors };
-    
+  // единый источник правды для ошибок
+  const getFieldError = (name, value) => {
     switch (name) {
       case 'name':
-        newErrors.name = value.length < 2 ? 'Минимум 2 символа' : '';
-        break;
+        return value.trim().length < 2 ? 'Минимум 2 символа' : '';
       case 'phone':
-        newErrors.phone = !/^(\+7|7|8)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/.test(value.replace(/\D/g, '')) ? 'Неверный формат телефона' : '';
-        break;
+        return !/^(\+7|7|8)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/.test(
+          value.replace(/\D/g, '')
+        )
+          ? 'Неверный формат телефона'
+          : '';
       case 'city':
-        newErrors.city = !value ? 'Выберите город' : '';
-        break;
+        return !value ? 'Выберите город' : '';
       case 'address':
-        newErrors.address = value.length < 5 ? 'Укажите полный адрес' : '';
-        break;
+        return value.trim().length < 5 ? 'Укажите полный адрес' : '';
       case 'cardNumber':
-        newErrors.cardNumber = value.replace(/\s/g, '').length !== 16 ? '16 цифр карты' : '';
-        break;
+        return value.replace(/\s/g, '').length !== 16 ? '16 цифр карты' : '';
       case 'expiry':
-        newErrors.expiry = !/^(0[1-9]|1[0-2])\/\d{2}$/.test(value) ? 'MM/YY формат' : '';
-        break;
+        return !/^(0[1-9]|1[0-2])\/\d{2}$/.test(value)
+          ? 'Формат MM/YY'
+          : '';
       case 'cvv':
-        newErrors.cvv = !/^\d{3}$/.test(value) ? '3 цифры CVV' : '';
-        break;
+        return !/^\d{3}$/.test(value) ? '3 цифры CVV' : '';
+      default:
+        return '';
     }
-    
-    setErrors(newErrors);
   };
 
-  // ОБНОВЛЕНИЕ + ВАЛИДАЦИЯ
+  const validateFields = (fieldNames) => {
+    const newErrors = {};
+    fieldNames.forEach((field) => {
+      const error = getFieldError(field, formData[field]);
+      newErrors[field] = error;
+    });
+
+    setErrors((prev) => ({
+      ...prev,
+      ...newErrors
+    }));
+
+    const isValid = Object.values(newErrors).every((err) => !err);
+    return { isValid, newErrors };
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    let formattedValue = value;
+    let formatted = value;
 
-    // ФОРМАТИРОВАНИЕ
     if (name === 'phone') {
-      formattedValue = value.replace(/[^\d+]/g, '').replace(/(\+?7|8)?(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/, 
-        (match, p1, p2, p3, p4, p5) => 
-        (p1 || '+7') + ' (' + p2 + (p2 ? ')' : '') + p3 + (p3 ? '-' : '') + p4 + (p4 ? '-' : '') + p5
-      ).slice(0, 18);
+      formatted = value
+        .replace(/[^\d+]/g, '')
+        .replace(
+          /(\+?7|8)?(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/,
+          (match, p1, p2, p3, p4, p5) =>
+            (p1 || '+7') +
+            (p2 ? ' (' + p2 : '') +
+            (p2 ? ')' : '') +
+            (p3 ? ' ' + p3 : '') +
+            (p4 ? '-' + p4 : '') +
+            (p5 ? '-' + p5 : '')
+        )
+        .slice(0, 20);
     } else if (name === 'cardNumber') {
-      formattedValue = value.replace(/\s/g, '').replace(/(\d{4})(\d{0,4})(\d{0,4})(\d{0,4})/, '$1 $2 $3 $4').trim().slice(0, 19);
+      formatted = value
+        .replace(/\s/g, '')
+        .replace(/(\d{4})(\d{0,4})(\d{0,4})(\d{0,4})/, '$1 $2 $3 $4')
+        .trim()
+        .slice(0, 19);
     } else if (name === 'expiry') {
-      formattedValue = value.replace(/\D/g, '').replace(/(\d{0,2})(\d{0,2})/, '$1/$2').slice(0, 5);
+      formatted = value
+        .replace(/\D/g, '')
+        .replace(/(\d{0,2})(\d{0,2})/, '$1/$2')
+        .slice(0, 5);
     } else if (name === 'cvv') {
-      formattedValue = value.replace(/\D/g, '').slice(0, 3);
+      formatted = value.replace(/\D/g, '').slice(0, 3);
     }
 
-    setFormData(prev => ({ ...prev, [name]: formattedValue }));
-    validateField(name, formattedValue);
+    setFormData((prev) => ({
+      ...prev,
+      [name]: formatted
+    }));
+
+    const error = getFieldError(name, formatted);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error
+    }));
   };
 
-  // ВАЛИДАЦИЯ ШАГА
-  const validateStep = () => {
-    const stepFields = step === 1 ? ['name', 'phone', 'city', 'address'] : ['cardNumber', 'expiry', 'cvv'];
-    const newErrors = {};
-    
-    stepFields.forEach(field => {
-      validateField(field, formData[field]);
-    });
-    
-    const hasErrors = Object.values(newErrors).some(err => err);
-    if (hasErrors) {
-      toast.error('❌ Заполните все поля правильно!');
-      Object.entries(newErrors).forEach(([field, error]) => {
-        if (error) setErrors(prev => ({ ...prev, [field]: error }));
-      });
-      return false;
+  const validateCurrentStep = () => {
+    const fieldsStep1 = ['name', 'phone', 'city', 'address'];
+    const fieldsStep2 = ['cardNumber', 'expiry', 'cvv'];
+    const fields = step === 1 ? fieldsStep1 : fieldsStep2;
+
+    const { isValid } = validateFields(fields);
+
+    if (!isValid) {
+      toast.error('Проверьте выделенные поля');
     }
-    return true;
+    return isValid;
   };
 
-  // ОФОРМИТЬ ПОДПИСКУ
-  const handleSubscribe = async () => {
+  const handleSubscribe = () => {
     if (totalItems < 5) {
-      toast.error('❌ Добавьте минимум 5 товаров в коробку!');
+      toast.error('Добавьте минимум 5 товаров в коробку');
       navigate('/box');
       return;
     }
 
-    if (!validateStep()) return;
+    if (!validateCurrentStep()) return;
 
     if (step === 1) {
       setStep(2);
@@ -126,170 +232,320 @@ const SubscriptionDetail = () => {
     }
 
     setLoading(true);
-    setErrors({});
-    
     setTimeout(() => {
       setLoading(false);
       dispatch({ type: 'CLEAR_CART' });
-      toast.success(`🎉 Подписка ${selectedPlan.title} оформлена!`);
-      toast.success('📦 Первая коробка в пути через 7-10 дней!');
-      
-      navigate('/success', { 
-        state: { plan: selectedPlan.title, price: subscriptionPrice, items: totalItems, address: `${formData.city}, ${formData.address}` }
+      toast.success(`Подписка «${selectedPlan.title}» оформлена`);
+      toast.success('Первая коробка будет у вас в течение 7–10 дней');
+
+      navigate('/success', {
+        state: {
+          plan: selectedPlan.title,
+          price: subscriptionPrice,
+          items: totalItems,
+          address: `${formData.city}, ${formData.address}`
+        }
       });
-    }, 3000);
+    }, 2000);
   };
 
-  // CSS КЛАССЫ ПОЛЯ
   const getInputClass = (name) => {
     const hasError = errors[name];
-    return `w-full p-3 border-2 rounded-xl transition-all duration-200 focus:outline-none ${
-      hasError 
-        ? 'border-red-400 bg-red-50 shake-horizontal' 
-        : formData[name] 
-        ? 'border-emerald-400 bg-emerald-50' 
-        : 'border-emerald-200 hover:border-emerald-300'
-    }`;
+    const hasValue = formData[name];
+
+    return [
+      'w-full p-3 border text-sm transition-all duration-200 focus:outline-none',
+      hasError
+        ? 'border-red-500 bg-red-50'
+        : hasValue
+        ? 'border-black bg-black/5'
+        : 'border-black/15 hover:border-black/50 focus:border-black'
+    ].join(' ');
   };
 
-  // АНИМАЦИЯ ОШИБКИ
-  const shakeAnimation = {
-    initial: { x: 0 },
-    animate: { x: [0, -5, 5, -5, 0] },
-    transition: { duration: 0.5 }
-  };
+  const isButtonDisabled = loading || totalItems < 5;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gradient-to-br from-emerald-50 to-yellow-50">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-white text-black"
+    >
       {/* HEADER */}
-      <div className="bg-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <Link to="/box" className="flex items-center text-emerald-600 mb-6 hover:text-emerald-800">
-            <FaArrowLeft className="mr-2" /> ← Моя коробка
-          </Link>
-          <div className="text-center">
-            <h1 className="text-5xl font-black text-emerald-800 mb-4">Оформление подписки</h1>
-            <p className="text-xl text-emerald-600 flex justify-center items-center">
-              <FaCrown className="mr-2" /> {selectedPlan.title} {selectedPlan.badge === 'ХИТ' && '(Популярный выбор)'}
+      <header className="border-b border-black/10">
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="flex items-center justify-between mb-6">
+            <Link
+              to="/box"
+              className="inline-flex items-center text-xs tracking-[0.25em] uppercase text-black/50 hover:text-black transition-colors"
+            >
+              <FaArrowLeft className="mr-2 text-[10px]" />
+              Моя коробка
+            </Link>
+
+            <div className="flex items-center gap-3 text-xs">
+              <span className="px-3 py-1 border border-black/40 tracking-[0.25em] uppercase">
+                {selectedPlan.badge}
+              </span>
+              <span className="uppercase tracking-[0.25em] text-black/60 flex items-center gap-1">
+                <FaCrown className="text-[10px]" />
+                {selectedPlan.title}
+              </span>
+            </div>
+          </div>
+
+          <div className="text-center space-y-3">
+            <p className="text-[11px] tracking-[0.35em] uppercase text-black/50">
+              ЭКО-ТОВАРЫ ПО ПОДПИСКЕ
             </p>
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight uppercase">
+              Оформление подписки
+            </h1>
+          </div>
+
+          {/* СХЕМА: коробка → данные → оплата */}
+          <div className="mt-8 flex items-center justify-center gap-8 text-[11px] uppercase tracking-[0.25em] text-black/50">
+            {/* 1: коробка */}
+            <div className="flex items-center gap-3">
+              <div
+                className={[
+                  'w-7 h-7 border flex items-center justify-center text-[10px]',
+                  totalItems >= 5 ? 'bg-black text-white border-black' : 'border-black/40'
+                ].join(' ')}
+              >
+                1
+              </div>
+              <span className="flex items-center gap-1">
+                <FaBox className="text-[10px]" /> Коробка
+              </span>
+            </div>
+            <div className="w-10 h-px bg-black/20" />
+            {/* 2: данные */}
+            <div className="flex items-center gap-3">
+              <div
+                className={[
+                  'w-7 h-7 border flex items-center justify-center text-[10px]',
+                  step === 1 ? 'bg-black text-white border-black' : 'border-black/40'
+                ].join(' ')}
+              >
+                2
+              </div>
+              <span>Данные</span>
+            </div>
+            <div className="w-10 h-px bg-black/20" />
+            {/* 3: оплата */}
+            <div className="flex items-center gap-3">
+              <div
+                className={[
+                  'w-7 h-7 border flex items-center justify-center text-[10px]',
+                  step === 2 ? 'bg-black text-white border-black' : 'border-black/40'
+                ].join(' ')}
+              >
+                3
+              </div>
+              <span>Оплата</span>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-6xl mx-auto px-6 py-12">
+      {/* MAIN */}
+      <main className="max-w-6xl mx-auto px-6 py-12">
         <div className="grid lg:grid-cols-3 gap-12">
           {/* ЛЕВАЯ КОЛОНКА */}
-          <motion.div initial={{ x: -20 }} animate={{ x: 0 }} className="lg:col-span-2 space-y-8">
+          <motion.div
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="lg:col-span-2 space-y-8"
+          >
             {totalItems >= 5 ? (
-              <div className="bg-white rounded-2xl p-8 shadow-xl">
-                <h3 className="text-2xl font-bold text-emerald-800 mb-6 flex items-center">
-                  <FaBox className="mr-2" /> Ваша коробка ({totalItems} товаров)
-                </h3>
-                <div className="space-y-4 max-h-64 overflow-y-auto">
-                  {state.items.map((item) => (
-                    <div key={item.id} className="flex items-center p-4 bg-emerald-50 rounded-xl">
-                      <div className="text-2xl mr-4">{item.image}</div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-emerald-800">{item.title}</h4>
-                        <p className="text-emerald-600">{item.quantity} × {item.price} ₽</p>
+              <section className="border border-black/10 p-8 bg-white">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-xs uppercase tracking-[0.25em] text-black/60 mb-1">
+                      ВАША КОРОБКА
+                    </h3>
+                    <p className="text-xs text-black/50">
+                      {totalItems} товаров • обновление каждый месяц
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    {selectedPlan.originalPrice && (
+                      <div className="text-xs line-through text-black/40">
+                        {selectedPlan.originalPrice} ₽
                       </div>
-                      <span className="font-bold text-emerald-600">{item.price * item.quantity} ₽</span>
+                    )}
+                    <div className="text-2xl font-extrabold">
+                      {subscriptionPrice} ₽
+                      <span className="text-xs uppercase text-black/50 ml-1">
+                        / мес
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+                  {state.items.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between px-4 py-3 border border-black/10 bg-black/5"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 border border-black/20 flex items-center justify-center text-xs bg-white">
+                          {item.image && (
+            <img
+              src={item.image}
+              alt={item.title}
+              className="w-full h-full object-cover"
+            />
+          )}
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-medium uppercase tracking-wide">
+                            {item.title}
+                          </h4>
+                          <p className="text-xs text-black/60">
+                            {item.quantity} × {item.price} ₽
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-sm font-semibold">
+                        {item.price * item.quantity} ₽
+                      </span>
                     </div>
                   ))}
                 </div>
-                <div className="border-t border-emerald-200 pt-4 mt-6">
-                  <div className="flex justify-between text-xl font-black text-emerald-800">
-                    <span>Итого:</span>
-                    <span>{subscriptionPrice} ₽/мес</span>
-                  </div>
+
+                <div className="border-t border-black/10 pt-4 mt-6 flex items-center justify-between">
+                  <span className="text-xs uppercase tracking-[0.25em] text-black/50">
+                    ИТОГ ПО ПОДПИСКЕ
+                  </span>
+                  <span className="text-lg font-semibold">
+                    {subscriptionPrice} ₽ / мес
+                  </span>
                 </div>
-              </div>
+              </section>
             ) : (
-              <div className="bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-8 text-center">
-                <FaBox className="text-6xl text-yellow-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-yellow-800 mb-2">Добавьте товары</h3>
-                <p className="text-yellow-700 mb-4">Нужно минимум 5 товаров для подписки</p>
-                <Link to="/box" className="bg-yellow-400 text-emerald-800 px-6 py-3 rounded-full font-bold">Дополнить коробку</Link>
-              </div>
+              <section className="border border-black/20 p-8 text-center bg-black/[0.02]">
+                <FaBox className="text-4xl mx-auto mb-4 text-black/50" />
+                <h3 className="text-xs uppercase tracking-[0.25em] mb-3">
+                  Недостаточно товаров
+                </h3>
+                <p className="text-sm text-black/60 mb-6">
+                  Для оформления подписки добавьте минимум 5 товаров в коробку.
+                </p>
+                <Link
+                  to="/box"
+                  className="inline-flex items-center justify-center px-8 py-3 border border-black text-xs font-semibold uppercase tracking-[0.25em] hover:bg-black hover:text-white transition-colors"
+                >
+                  Дополнить коробку
+                </Link>
+              </section>
             )}
 
-            <div className="bg-white rounded-2xl p-8 shadow-xl">
-              <h3 className="text-2xl font-bold text-emerald-800 mb-6">Что включено</h3>
+            <section className="border border-black/10 p-8 bg-white">
+              <h3 className="text-xs uppercase tracking-[0.25em] text-black/60 mb-6">
+                Что включено
+              </h3>
               <div className="grid md:grid-cols-2 gap-4">
                 {selectedPlan.features.map((feature, i) => (
-                  <div key={i} className="flex items-center space-x-3">
-                    <FaCheckCircle className="text-emerald-500 text-xl" />
-                    <span className="text-emerald-700">{feature}</span>
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-6 h-6 border border-black/40 flex items-center justify-center text-[10px]">
+                      <FaCheckCircle />
+                    </div>
+                    <span className="text-sm text-black/80">{feature}</span>
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
           </motion.div>
 
           {/* ПРАВАЯ КОЛОНКА: ФОРМА */}
-          <motion.div initial={{ x: 20 }} animate={{ x: 0 }} className="space-y-8">
-            <div className="bg-white rounded-2xl p-8 shadow-xl sticky top-20">
-              {/* ПРОГРЕСС */}
-              <div className="flex justify-between mb-8">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                  step >= 1 ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-500'
-                }`}>1</div>
-                <div className="w-16 h-1 bg-emerald-200 rounded-full mt-4"></div>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                  step >= 2 ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-500'
-                }`}>2</div>
+          <motion.div
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.4, ease: 'easeOut', delay: 0.05 }}
+            className="space-y-8"
+          >
+            <section className="border border-black/10 p-8 bg-white sticky top-20">
+              <div className="flex items-center justify-between mb-6 text-[11px] uppercase tracking-[0.25em] text-black/50">
+                <span>Шаг {step} из 2</span>
+                <span>{step === 1 ? 'Данные для доставки' : 'Оплата'}</span>
               </div>
 
-              {/* ШАГ 1: АДРЕС */}
               <AnimatePresence mode="wait">
                 {step === 1 && (
                   <motion.div
-                    key="address"
-                    initial={{ opacity: 0, x: 20 }}
+                    key="step-address"
+                    initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.25 }}
                     className="space-y-4"
                   >
-                    <h3 className="text-xl font-bold text-emerald-800 flex items-center">
-                      <FaMapMarkerAlt className="mr-2" /> Адрес доставки
+                    <h3 className="text-xs uppercase tracking-[0.25em] text-black/60 mb-2 flex items-center gap-2">
+                      <FaMapMarkerAlt className="text-[11px]" />
+                      Адрес доставки
                     </h3>
-                    
-                    {['name', 'phone', 'city', 'address'].map(field => (
+
+                    {['name', 'phone', 'city', 'address'].map((field) => (
                       <div key={field} className="space-y-1">
-                        <label className="block text-emerald-700 font-semibold mb-1 flex items-center">
-                          {field === 'name' && <FaUser className="mr-1" />}
-                          {field === 'phone' && <FaPhone className="mr-1" />}
-                          {field === 'city' && <FaMapMarkerAlt className="mr-1" />}
-                          {field === 'address' && <FaMapMarkerAlt className="mr-1" />}
-                          {field.charAt(0).toUpperCase() + field.slice(1)}
+                        <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60 mb-1 flex items-center gap-2">
+                          {field === 'name' && <FaUser className="text-[11px]" />}
+                          {field === 'phone' && (
+                            <FaPhone className="text-[11px]" />
+                          )}
+                          {(field === 'city' || field === 'address') && (
+                            <FaMapMarkerAlt className="text-[11px]" />
+                          )}
+                          {field === 'name' && 'ФИО'}
+                          {field === 'phone' && 'Телефон'}
+                          {field === 'city' && 'Город'}
+                          {field === 'address' && 'Адрес'}
                         </label>
+
                         {field === 'city' ? (
-                          <select name={field} value={formData[field]} onChange={handleInputChange} className={getInputClass(field)}>
+                          <select
+                            name={field}
+                            value={formData[field]}
+                            onChange={handleInputChange}
+                            className={getInputClass(field)}
+                          >
                             <option value="">Выберите город</option>
-                            {CITIES.map(city => <option key={city} value={city}>{city}</option>)}
+                            {CITIES.map((city) => (
+                              <option key={city} value={city}>
+                                {city}
+                              </option>
+                            ))}
                           </select>
                         ) : (
-                          <motion.input
-                            {...shakeAnimation}
+                          <input
                             name={field}
                             value={formData[field]}
                             onChange={handleInputChange}
                             className={getInputClass(field)}
                             placeholder={
-                              field === 'name' ? 'Иванов Иван Иванович' :
-                              field === 'phone' ? '+7 (999) 123-45-67' :
-                              field === 'address' ? 'ул. Ленина, д. 5, кв. 23' : ''
+                              field === 'name'
+                                ? 'Иванов Иван Иванович'
+                                : field === 'phone'
+                                ? '+7 (999) 123-45-67'
+                                : field === 'address'
+                                ? 'Улица, дом, квартира'
+                                : ''
                             }
                           />
                         )}
+
                         <AnimatePresence>
                           {errors[field] && (
                             <motion.p
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              className="text-red-500 text-sm flex items-center mt-1"
+                              initial={{ opacity: 0, y: -4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -4 }}
+                              className="text-xs text-red-500 flex items-center gap-1 mt-1"
                             >
-                              <FaExclamationTriangle className="mr-1" />
+                              <FaExclamationTriangle className="text-[10px]" />
                               {errors[field]}
                             </motion.p>
                           )}
@@ -299,23 +555,25 @@ const SubscriptionDetail = () => {
                   </motion.div>
                 )}
 
-                {/* ШАГ 2: КАРТА */}
                 {step === 2 && (
                   <motion.div
-                    key="card"
-                    initial={{ opacity: 0, x: 20 }}
+                    key="step-card"
+                    initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.25 }}
                     className="space-y-4"
                   >
-                    <h3 className="text-xl font-bold text-emerald-800 flex items-center">
-                      <FaCreditCard className="mr-2" /> Данные карты
+                    <h3 className="text-xs uppercase tracking-[0.25em] text-black/60 mb-2 flex items-center gap-2">
+                      <FaCreditCard className="text-[11px]" />
+                      Данные карты
                     </h3>
-                    
+
                     <div className="space-y-1">
-                      <label className="block text-emerald-700 font-semibold mb-1">Номер карты</label>
-                      <motion.input
-                        {...shakeAnimation}
+                      <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60 mb-1">
+                        Номер карты
+                      </label>
+                      <input
                         name="cardNumber"
                         value={formData.cardNumber}
                         onChange={handleInputChange}
@@ -324,8 +582,14 @@ const SubscriptionDetail = () => {
                       />
                       <AnimatePresence>
                         {errors.cardNumber && (
-                          <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-red-500 text-sm flex items-center mt-1">
-                            <FaExclamationTriangle className="mr-1" /> {errors.cardNumber}
+                          <motion.p
+                            initial={{ opacity: 0, y: -4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -4 }}
+                            className="text-xs text-red-500 flex items-center gap-1 mt-1"
+                          >
+                            <FaExclamationTriangle className="text-[10px]" />
+                            {errors.cardNumber}
                           </motion.p>
                         )}
                       </AnimatePresence>
@@ -333,9 +597,10 @@ const SubscriptionDetail = () => {
 
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="block text-emerald-700 font-semibold mb-1">Срок действия</label>
-                        <motion.input
-                          {...shakeAnimation}
+                        <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60 mb-1">
+                          Срок действия
+                        </label>
+                        <input
                           name="expiry"
                           value={formData.expiry}
                           onChange={handleInputChange}
@@ -344,16 +609,24 @@ const SubscriptionDetail = () => {
                         />
                         <AnimatePresence>
                           {errors.expiry && (
-                            <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-red-500 text-sm flex items-center mt-1">
-                              <FaExclamationTriangle className="mr-1" /> {errors.expiry}
+                            <motion.p
+                              initial={{ opacity: 0, y: -4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -4 }}
+                              className="text-xs text-red-500 flex items-center gap-1 mt-1"
+                            >
+                              <FaExclamationTriangle className="text-[10px]" />
+                              {errors.expiry}
                             </motion.p>
                           )}
                         </AnimatePresence>
                       </div>
+
                       <div className="space-y-1">
-                        <label className="block text-emerald-700 font-semibold mb-1">CVV</label>
-                        <motion.input
-                          {...shakeAnimation}
+                        <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60 mb-1">
+                          CVV
+                        </label>
+                        <input
                           name="cvv"
                           value={formData.cvv}
                           onChange={handleInputChange}
@@ -362,12 +635,23 @@ const SubscriptionDetail = () => {
                         />
                         <AnimatePresence>
                           {errors.cvv && (
-                            <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-red-500 text-sm flex items-center mt-1">
-                              <FaExclamationTriangle className="mr-1" /> {errors.cvv}
+                            <motion.p
+                              initial={{ opacity: 0, y: -4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -4 }}
+                              className="text-xs text-red-500 flex items-center gap-1 mt-1"
+                            >
+                              <FaExclamationTriangle className="text-[10px]" />
+                              {errors.cvv}
                             </motion.p>
                           )}
                         </AnimatePresence>
                       </div>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-2 text-[11px] text-black/60 mt-1">
+                      <FaLock className="text-[10px]" />
+                      <span>Безопасная оплата, данные карты не сохраняются</span>
                     </div>
                   </motion.div>
                 )}
@@ -375,41 +659,65 @@ const SubscriptionDetail = () => {
 
               <button
                 onClick={handleSubscribe}
-                disabled={loading || totalItems < 5}
-                className={`w-full py-4 rounded-xl font-black text-xl flex items-center justify-center space-x-3 transition-all shadow-lg ${
-                  totalItems >= 5 && Object.values(errors).every(e => !e)
-                    ? 'bg-gradient-to-r from-emerald-600 to-yellow-500 text-white hover:from-emerald-700 hover:to-yellow-600'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                disabled={isButtonDisabled}
+                className={`w-full mt-8 py-4 border font-semibold text-xs tracking-[0.25em] uppercase flex items-center justify-center gap-3 transition-all ${
+                  isButtonDisabled
+                    ? 'bg-black/5 text-black/30 border-black/15 cursor-not-allowed'
+                    : 'bg-black text-white border-black hover:bg-white hover:text-black'
                 }`}
               >
                 {loading ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Обрабатываем оплату...</span>
+                    <div className="animate-spin h-4 w-4 border-b-2 border-white" />
+                    <span>Обработка...</span>
                   </>
                 ) : step === 1 ? (
-                  <> <FaCreditCard /> <span>Оплатить {subscriptionPrice} ₽</span> </>
+                  <>
+                    <FaCreditCard className="text-[11px]" />
+                    <span>Перейти к оплате</span>
+                  </>
                 ) : (
-                  <> <FaCheck /> <span>Подтвердить оплату</span> </>
+                  <>
+                    <FaCheck className="text-[11px]" />
+                    <span>Подтвердить оплату</span>
+                  </>
                 )}
               </button>
+            </section>
 
-              {step === 2 && (
-                <div className="flex items-center justify-center space-x-2 text-xs text-emerald-600 mt-4">
-                  <FaLock className="text-emerald-500" />
-                  <span>Безопасная оплата • Данные не сохраняются</span>
-                </div>
-              )}
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 shadow-xl space-y-4 text-center">
-              <div className="flex items-center justify-center space-x-2 text-emerald-600"><FaTruck className="text-xl" /> Доставка: 7-10 дней</div>
-              <div className="flex items-center justify-center space-x-2 text-emerald-600"><FaCalendarAlt className="text-xl" /> Ежемесячно</div>
-              <div className="flex items-center justify-center space-x-2 text-emerald-600"><FaShieldAlt className="text-xl" /> 14 дней на возврат</div>
-            </div>
+            {/* СВОДКА УСЛОВИЙ */}
+            <section className="border border-black/10 p-6 bg-white space-y-3 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-black/70">
+                  <FaTruck className="text-[11px]" />
+                  Доставка
+                </span>
+                <span className="text-black/60 text-[11px] uppercase tracking-[0.25em]">
+                  7–10 дней
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-black/70">
+                  <FaCalendarAlt className="text-[11px]" />
+                  Списание
+                </span>
+                <span className="text-black/60 text-[11px] uppercase tracking-[0.25em]">
+                  Ежемесячно
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-black/70">
+                  <FaShieldAlt className="text-[11px]" />
+                  Возврат
+                </span>
+                <span className="text-black/60 text-[11px] uppercase tracking-[0.25em]">
+                  14 дней
+                </span>
+              </div>
+            </section>
           </motion.div>
         </div>
-      </div>
+      </main>
     </motion.div>
   );
 };

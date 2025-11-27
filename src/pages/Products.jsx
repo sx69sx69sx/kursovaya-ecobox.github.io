@@ -2,42 +2,36 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
-import { 
-  FaBox, 
-  FaLeaf, 
-  FaFilter, 
-  FaStar, 
-  FaSearch, 
-  FaArrowLeft 
-} from 'react-icons/fa';
+import { FaArrowLeft, FaSearch, FaStar } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 
-// 24 ПОПУЛЯРНЫХ ТОВАРА ДЛЯ ПОДПИСКИ
 const PRODUCTS = [
-  { id: 1, title: 'Эко-зубная паста', price: 350, image: '🦷', category: 'Косметика', rating: 4.8 },
-  { id: 2, title: 'Бамбуковая щетка', price: 250, image: '🪥', category: 'Гигиена', rating: 4.9 },
-  { id: 3, title: 'Натуральное мыло', price: 280, image: '🧼', category: 'Косметика', rating: 4.7 },
-  { id: 4, title: 'Многоразовая бутылка', price: 890, image: '🥤', category: 'Аксессуары', rating: 4.9 },
-  { id: 5, title: 'Бамбуковые палочки', price: 180, image: '👂', category: 'Гигиена', rating: 4.8 },
-  { id: 6, title: 'Эко-шампунь', price: 420, image: '🧴', category: 'Косметика', rating: 4.6 },
-  { id: 7, title: 'Хлопковая сумка', price: 450, image: '👜', category: 'Аксессуары', rating: 4.9 },
-  { id: 8, title: 'Натуральный дезодорант', price: 320, image: '🫒', category: 'Косметика', rating: 4.7 },
-  { id: 9, title: 'Металлическая соломинка', price: 150, image: '🥤', category: 'Аксессуары', rating: 4.8 },
-  { id: 10, title: 'Эко-губка', price: 220, image: '🧽', category: 'Быт', rating: 4.9 },
-  { id: 11, title: 'Органический крем', price: 580, image: '💧', category: 'Косметика', rating: 4.8 },
-  { id: 12, title: 'Бамбуковая расческа', price: 310, image: '🪮', category: 'Гигиена', rating: 4.7 },
-  { id: 13, title: 'Эко-зубная нить', price: 190, image: '🦷', category: 'Гигиена', rating: 4.6 },
-  { id: 14, title: 'Натуральный скраб', price: 380, image: '🧴', category: 'Косметика', rating: 4.8 },
-  { id: 15, title: 'Бамбуковые ватные палочки', price: 160, image: '👂', category: 'Гигиена', rating: 4.9 },
-  { id: 16, title: 'Эко-стиральный порошок', price: 450, image: '🧺', category: 'Быт', rating: 4.7 },
-  { id: 17, title: 'Хлопковые прокладки', price: 290, image: '🩸', category: 'Гигиена', rating: 4.8 },
-  { id: 18, title: 'Натуральный бальзам', price: 340, image: '💋', category: 'Косметика', rating: 4.9 },
-  { id: 19, title: 'Металлическая щетка', price: 210, image: '🧽', category: 'Быт', rating: 4.6 },
-  { id: 20, title: 'Эко-менструальная чаша', price: 1290, image: '🩸', category: 'Гигиена', rating: 4.9 },
-  { id: 21, title: 'Органическое масло', price: 520, image: '🫒', category: 'Косметика', rating: 4.8 },
-  { id: 22, title: 'Бамбуковая подставка', price: 390, image: '🪮', category: 'Аксессуары', rating: 4.7 },
-  { id: 23, title: 'Натуральный спрей', price: 260, image: '🧴', category: 'Косметика', rating: 4.6 },
-  { id: 24, title: 'Эко-сумка для обуви', price: 480, image: '👟', category: 'Аксессуары', rating: 4.9 }
+  { id: 1, title: 'Эко-зубная паста', price: 350, image: '/images/33333.jpg', category: 'Косметика', rating: 4.8 },
+  { id: 2, title: 'Бамбуковая щетка', price: 250, image: '/images/bambi.jpg', category: 'Гигиена', rating: 4.9 },
+  { id: 3, title: 'Натуральное мыло', price: 280, image: '/images/soap.jpg', category: 'Косметика', rating: 4.7 },
+  { id: 4, title: 'Многоразовая бутылка', price: 890, image: '/images/2222.avif', category: 'Аксессуары', rating: 4.9 },
+  { id: 5, title: 'Бамбуковые палочки', price: 180, image: '/images/4343.png', category: 'Быт', rating: 4.8 },
+  { id: 6, title: 'Эко-шампунь', price: 420, image: '/images/shampoo.jpg', category: 'Косметика', rating: 4.6 },
+  { id: 7, title: 'Хлопковая сумка', price: 450, image: '/images/5555.jpg', category: 'Аксессуары', rating: 4.9 },
+  { id: 8, title: 'Натуральный дезодорант', price: 320, image: '/images/6666.jpg', category: 'Косметика', rating: 4.7 },
+  { id: 9, title: 'Металлическая соломинка', price: 150, image: '/images/solo.webp', category: 'Аксессуары', rating: 4.8 },
+  { id: 10, title: 'Эко-губка', price: 220, image: '/images/gubka.jpg', category: 'Быт', rating: 4.9 },
+  { id: 11, title: 'Органический крем', price: 580, image: '/images/kr.jpeg', category: 'Косметика', rating: 4.8 },
+  { id: 12, title: 'Бамбуковая расческа', price: 310, image: '/images/ras.jpg', category: 'Гигиена', rating: 4.7 },
+  { id: 13, title: 'Пакеты', price: 190, image: '/images/bio_bags.jpg', category: 'Быт', rating: 4.8 },
+  { id: 14, title: 'Термокружка', price: 990, image: '/images/thermo.jpg', category: 'Аксессуары', rating: 4.9 },
+  { id: 15, title: 'Эко-гель для душа', price: 380, image: '/images/gel.webp', category: 'Косметика', rating: 4.8 },
+  { id: 16, title: 'Щётка для посуды', price: 260, image: '/images/dish_brush.webp', category: 'Быт', rating: 4.7 },
+  { id: 17, title: 'Твёрдый кондиционер', price: 310, image: '/images/cond.jpg', category: 'Косметика', rating: 4.8 },
+  { id: 18, title: 'Контейнер для еды', price: 650, image: '/images/foodbox.jpg', category: 'Быт', rating: 4.9 },
+  { id: 19, title: 'Салфетки из бамбука', price: 210, image: '/images/napkins.webp', category: 'Быт', rating: 4.5 },
+  { id: 20, title: 'Твёрдый шампунь', price: 390, image: '/images/hardshampoo.jpg', category: 'Косметика', rating: 4.9 },
+  { id: 21, title: 'Освежитель', price: 750, image: '/images/fresh.webp', category: 'Быт', rating: 4.6 },
+  { id: 22, title: 'Кокосовое мыло', price: 240, image: '/images/cocos.png', category: 'Косметика', rating: 4.8 },
+  { id: 23, title: 'Щётка для одежды', price: 330, image: '/images/clothbrush.jpg', category: 'Быт', rating: 4.5 },
+  { id: 24, title: 'Диски для лица', price: 280, image: '/images/pads.webp', category: 'Гигиена', rating: 4.7 },
+  { id: 25, title: 'Эко-порошок', price: 460, image: '/images/powder.jpeg', category: 'Быт', rating: 4.6 },
+  { id: 26, title: 'Аромасаше', price: 150, image: '/images/sachet.jpg', category: 'Быт', rating: 4.9 },
 ];
 
 const CATEGORIES = ['Все', 'Косметика', 'Гигиена', 'Аксессуары', 'Быт'];
@@ -48,7 +42,6 @@ const Products = () => {
   const [category, setCategory] = useState('Все');
   const [sort, setSort] = useState('popular');
 
-  // ФИЛЬТРЫ
   const filteredProducts = PRODUCTS.filter(product => {
     const matchesSearch = product.title.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = category === 'Все' || product.category === category;
@@ -57,196 +50,142 @@ const Products = () => {
     if (sort === 'price-low') return a.price - b.price;
     if (sort === 'price-high') return b.price - a.price;
     if (sort === 'rating') return b.rating - a.rating;
-    return b.id - a.id; // popular
+    return b.id - a.id;
   });
 
-  // ДОБАВИТЬ В КОРОБКУ
   const addToBox = (product) => {
-    dispatch({ 
-      type: 'ADD_ITEM', 
-      payload: { 
-        id: product.id, 
-        title: product.title, 
-        price: product.price, 
-        image: product.image, 
-        quantity: 1 
-      } 
+    dispatch({
+      type: 'ADD_ITEM',
+      payload: { id: product.id, title: product.title, price: product.price, image: product.image, quantity: 1 }
     });
-    toast.success(`✅ ${product.title} добавлено в коробку!`);
+    toast.success(`${product.title} добавлено в коробку`);
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      className="min-h-screen bg-emerald-50"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-white text-black">
+
       {/* HEADER */}
-      <div className="bg-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <Link to="/" className="flex items-center text-emerald-600 mb-4 hover:text-emerald-800">
+      <div className="border-b border-black/10">
+        <div className="max-w-7xl mx-auto px-6 py-10">
+          <Link to="/" className="flex items-center mb-6 text-black hover:opacity-50 transition">
             <FaArrowLeft className="mr-2" /> На главную
           </Link>
+
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-emerald-800">Каталог товаров</h1>
-              <p className="text-emerald-600 flex items-center">
-                <FaLeaf className="mr-2" /> 100% натуральные продукты для подписки
-              </p>
+              <h1 className="text-4xl font-medium tracking-tight uppercase">Каталог</h1>
+              <p className="text-black/50 mt-1">Выберите товары для подписки</p>
             </div>
-            <Link 
-              to="/box" 
-              className="bg-yellow-400 text-emerald-800 px-6 py-3 rounded-full font-bold flex items-center space-x-2 hover:bg-yellow-300"
-            >
-              <FaBox />
-              <span>Моя коробка</span>
-            </Link>
+
+            
           </div>
         </div>
       </div>
 
-      {/* ФИЛЬТРЫ */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+      {/* FILTERS */}
+      <div className="border-b border-black/10">
+        <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="grid md:grid-cols-3 gap-6">
-            {/* ПОИСК */}
+
+            {/* SEARCH */}
             <div className="relative">
-              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald-400" />
+              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-black/30" />
               <input
                 type="text"
-                placeholder="Поиск товаров..."
+                placeholder="Поиск"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border-2 border-emerald-200 rounded-xl focus:border-yellow-400 focus:outline-none"
+                className="w-full pl-10 pr-4 py-3 border border-black/20 focus:border-black outline-none"
               />
             </div>
 
-            {/* КАТЕГОРИИ */}
-            <div className="md:col-span-2">
-              <div className="flex flex-wrap gap-2">
-                {CATEGORIES.map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => setCategory(cat)}
-                    className={`px-4 py-2 rounded-full font-semibold transition-all ${
-                      category === cat
-                        ? 'bg-yellow-400 text-emerald-800 shadow-lg'
-                        : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
+            {/* CATEGORIES */}
+            <div className="md:col-span-2 flex  gap-2">
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setCategory(cat)}
+                  className={`px-4 py-2 border text-sm tracking-wide transition ${
+                    category === cat ? 'bg-black text-white' : 'border-black/20 hover:border-black'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
-          </div>
-
-          {/* СОРТИРОВКА */}
-          <div className="flex justify-end mt-4">
+             {/* SORT */}
+          
+        </div>
+        <div className="flex  mt-4">
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              className="px-4 py-2 border-2 border-emerald-200 rounded-xl focus:border-yellow-400"
+              className="px-4 py-2 border border-black/20 focus:border-black outline-none"
             >
               <option value="popular">Популярные</option>
               <option value="rating">По рейтингу</option>
-              <option value="price-low">Цена: по возрастанию</option>
-              <option value="price-high">Цена: по убыванию</option>
+              <option value="price-low">Цена: вверх</option>
+              <option value="price-high">Цена: вниз</option>
             </select>
           </div>
+      </div>
+          </div>
+
+         
+
+      {/* PRODUCTS GRID */}
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
+
+          {filteredProducts.map((product, i) => (
+            <Link to={`/product/${product.id}`} key={product.id}>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.03 }}
+                className="border border-black/15 p-6 hover:bg-black hover:text-white transition group cursor-pointer"
+              >
+                <div className="w-full h-48 bg-black/5 mb-4 overflow-hidden">
+                  <img
+                    src={product.image}
+                    alt={product.title}
+                    className="w-full h-full object-cover group-hover:opacity-80 transition"
+                  />
+                </div>
+
+                <h3 className="font-medium uppercase tracking-wide mb-2">{product.title}</h3>
+
+                <div className="flex items-center gap-1 mb-2">
+                  {[...Array(5)].map((_, j) => (
+                    <FaStar
+                      key={j}
+                      className={j < Math.floor(product.rating)
+                        ? 'text-black group-hover:text-white'
+                        : 'text-black/20 group-hover:text-white/30'}
+                    />
+                  ))}
+                  <span className="text-sm opacity-70">{product.rating}</span>
+                </div>
+
+                <div className="text-lg font-medium mb-4">{product.price} ₽</div>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addToBox(product);
+                  }}
+                  className="w-full border border-black py-2 uppercase tracking-wide hover:bg-white hover:text-black transition"
+                >
+                  Добавить
+                </button>
+              </motion.div>
+            </Link>
+          ))}
+
         </div>
       </div>
 
-      {/* ТОВАРЫ */}
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        {filteredProducts.length === 0 ? (
-          <div className="text-center py-20">
-            <FaBox className="text-9xl text-emerald-200 mx-auto mb-8" />
-            <h2 className="text-3xl font-bold text-emerald-800 mb-4">Товары не найдены</h2>
-            <p className="text-emerald-600 mb-8">Попробуйте изменить фильтры</p>
-            <button
-              onClick={() => {
-                setSearch('');
-                setCategory('Все');
-                setSort('popular');
-              }}
-              className="bg-yellow-400 text-emerald-800 px-8 py-3 rounded-full font-bold"
-            >
-              Показать все
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="text-center mb-12">
-              <p className="text-xl text-emerald-600">
-                Найдено {filteredProducts.length} товаров
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {filteredProducts.map((product, i) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  className="bg-white rounded-2xl p-6 shadow-lg overflow-hidden group cursor-pointer"
-                >
-                  {/* ИЗОБРАЖЕНИЕ */}
-                  <div className="text-6xl mb-4 text-center">{product.image}</div>
-
-                  {/* НАЗВАНИЕ */}
-                  <h3 className="font-bold text-emerald-800 mb-3 text-center leading-tight">
-                    {product.title}
-                  </h3>
-
-                  {/* РЕЙТИНГ */}
-                  <div className="flex items-center justify-center mb-4">
-                    {[...Array(5)].map((_, j) => (
-                      <FaStar
-                        key={j}
-                        className={j < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'}
-                      />
-                    ))}
-                    <span className="ml-1 text-sm text-emerald-600">{product.rating}</span>
-                  </div>
-
-                  {/* КАТЕГОРИЯ */}
-                  <p className="text-xs text-emerald-500 text-center mb-4 capitalize">
-                    {product.category}
-                  </p>
-
-                  {/* ЦЕНА */}
-                  <div className="flex items-center justify-center mb-6">
-                    <span className="text-2xl font-black text-emerald-600">
-                      {product.price} ₽/мес
-                    </span>
-                  </div>
-
-                  {/* КНОПКИ */}
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => addToBox(product)}
-                      className="w-full bg-yellow-400 text-emerald-800 py-3 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-yellow-300 transition-all shadow-lg"
-                    >
-                      <FaBox />
-                      <span>В коробку</span>
-                    </button>
-                    
-                    <Link
-                      to={`/product/${product.id}`}
-                      className="w-full bg-emerald-50 text-emerald-700 py-2 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:bg-emerald-100 transition-all"
-                    >
-                      Подробнее
-                    </Link>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
     </motion.div>
   );
 };

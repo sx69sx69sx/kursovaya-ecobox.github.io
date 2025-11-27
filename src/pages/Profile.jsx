@@ -1,279 +1,500 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { toast } from 'react-hot-toast';
-import { useAuth } from '../context/AuthContext';
-import { 
-  FaCrown, FaCreditCard, FaEdit, FaDownload, 
-  FaBell, FaArrowLeft, FaCheckCircle, FaPhone, 
-  FaFileInvoice, FaUser, FaPlusCircle
-} from 'react-icons/fa';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { toast } from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
+import {
+  FaCrown,
+  FaCreditCard,
+  FaEdit,
+  FaDownload,
+  FaBell,
+  FaArrowLeft,
+  FaCheckCircle,
+  FaPhone,
+  FaFileInvoice,
+  FaUser,
+  FaPlusCircle,
+} from "react-icons/fa";
+import jsPDF from "jspdf";
+import QRCode from "qrcode";
 
 const Profile = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, createSubscription } = useAuth();
-  
+
   const [editMode, setEditMode] = useState(false);
-  const [notifications, setNotifications] = useState(0);
+  const [activeSection, setActiveSection] = useState("profile");
 
-  if (!user) {
-    navigate('/login');
-    return null;
-  }
+  // простая форма профиля (локально)
+  const [profileForm, setProfileForm] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+  });
 
-  // ✅ ПОДПИСКА ТОЛЬКО ЕСЛИ ОПЛАЧЕНА
-  const subscription = user.subscription;
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
 
-  // ✅ СОЗДАТЬ ПОДПИСКУ ИЗ ЗАКАЗА
+  if (!user) return null;
+
+  const subscription = user.subscription || null;
+
+  // создать подписку из state, если пришли после оплаты
   useEffect(() => {
     const { state: orderData } = location;
     if (orderData && !subscription) {
       const success = createSubscription({
-        plan: orderData.plan || 'Популярная',
+        plan: orderData.plan || "Популярная",
         price: orderData.price || 1611,
-        items: orderData.items || 5
+        items: orderData.items || 5,
       });
       if (success) {
-        toast.success('🎉 Подписка оформлена из заказа!');
+        toast.success("Подписка сохранена в профиле");
       }
     }
   }, [location, subscription, createSubscription]);
 
-  // РЕДАКТИРОВАНИЕ ПРОФИЛЯ
   const handleEditProfile = (e) => {
     e.preventDefault();
     setEditMode(false);
-    toast.success('✅ Профиль обновлен!');
+    // здесь можно вызвать API обновления профиля
+    toast.success("Профиль обновлён");
   };
 
-  // СКАЧАТЬ ЧЕК
-  const downloadReceipt = () => {
+  const scrollToSection = (id) => {
+    setActiveSection(id);
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  // ------- ГЕНЕРАЦИЯ PDF-ЧЕКА (ASCII, с QR) -------
+  const generateReceipt = async () => {
     if (!subscription) {
-      toast.error('❌ Сначала оформите подписку!');
+      toast.error("Сначала оформите подписку");
       return;
     }
-    toast.success('📥 Чек скачан!');
-  };
 
-  // ПОДДЕРЖКА
-  const sendSupport = () => {
-    toast.success('📞 Запрос отправлен в поддержку!');
+    const doc = new jsPDF({
+      unit: "mm",
+      format: [58, 230], // узкая чековая лента
+    });
+
+    doc.setFont("courier", "normal");
+    doc.setFontSize(8);
+
+    let y = 6;
+    const left = 4;
+
+    const print = (text = "", align = "left") => {
+      text = String(text).replace(/[^\x20-\x7E]/g, ""); // только ASCII
+      if (align === "center") {
+        const tw = doc.getTextWidth(text);
+        doc.text(text, (58 - tw) / 2, y);
+      } else if (align === "right") {
+        const tw = doc.getTextWidth(text);
+        doc.text(text, 58 - 4 - tw, y);
+      } else {
+        doc.text(text, left, y);
+      }
+      y += 4;
+    };
+
+    const line = () => print("--------------------------------");
+
+    // дата/время
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2, "0");
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const yyyy = now.getFullYear();
+    const hh = String(now.getHours()).padStart(2, "0");
+    const mi = String(now.getMinutes()).padStart(2, "0");
+    const ss = String(now.getSeconds()).padStart(2, "0");
+
+    const dateStr = `${dd}.${mm}.${yyyy}`;
+    const timeStr = `${hh}:${mi}:${ss}`;
+
+    const total = Number(subscription.price || 0).toFixed(2);
+
+    // строка для QR (упрощённый формат ФНС)
+    const qrString = `t=${yyyy}${mm}${dd}T${hh}${mi}${ss}&s=${total}&fn=9990000000000&i=123456&fp=987654321&n=1`;
+
+    const qr = await QRCode.toDataURL(qrString, {
+      margin: 0,
+      width: 200,
+      color: { dark: "#000000", light: "#FFFFFF" },
+    });
+
+    // Шапка
+    print('OOO "ECOBOX"', "center");
+    print("INN 7700000000", "center");
+    print("KKT 0000000001", "center");
+    line();
+
+    print("KASSOVYI CHEK", "center");
+    print("PRIHOD", "center");
+    line();
+
+    print(`DATA:  ${dateStr}`);
+    print(`VREMYA: ${timeStr}`);
+    line();
+
+    // Товар / услуга
+    print("1. PODPISKA ECOBOX");
+    print(`PLAN: ${subscription.plan}`, "left");
+    print(`1 x ${total} = ${total}`, "right");
+    line();
+
+    // Итог
+    print(`ITOG: ${total} RUB`, "right");
+    print(`OPLATA KARTOY: ${total}`, "right");
+    print("NDS: BEZ NDS");
+    line();
+
+    print("DOSTAVKA PO PODPISKE");
+    print("ADRES: SM. LICHNYI KABINET");
+    line();
+
+    // QR
+    const qrSize = 30;
+    const qrX = (58 - qrSize) / 2;
+    const qrY = y;
+
+    doc.addImage(qr, "PNG", qrX, qrY, qrSize, qrSize);
+    y = qrY + qrSize + 4;
+
+    print("SPASIBO ZA POKUPKU!", "center");
+
+    doc.save(`EcoBox_Check_${dateStr.replace(/\./g, "-")}.pdf`);
+    toast.success("Чек сформирован");
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-yellow-50"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-white text-black"
     >
       {/* HEADER */}
-      <div className="bg-white shadow-lg">
-        <div className="max-w-6xl mx-auto px-6 py-6">
-          <Link to={subscription ? "/success" : "/subscription/popular"} className="flex items-center text-emerald-600 mb-6 hover:text-emerald-800">
-            <FaArrowLeft className="mr-2" /> {subscription ? "Назад к статусу" : "Выбрать подписку"}
+      <header className="border-b border-black/10">
+        <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+          <Link
+            to="/"
+            className="flex items-center text-xs tracking-[0.18em] uppercase hover:opacity-60"
+          >
+            <FaArrowLeft className="mr-2 text-[10px]" />
+            На главную
           </Link>
-          <div className="text-center">
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FaUser className="text-3xl text-white" />
-            </motion.div>
-            <h1 className="text-4xl font-black text-emerald-800 mb-2">{user.name}</h1>
-            {subscription ? (
-              <p className="text-emerald-600 flex justify-center items-center">
-                <FaCrown className="mr-2" /> {subscription.plan} клуб
-              </p>
-            ) : (
-              <p className="text-yellow-600 flex justify-center items-center">
-                <FaPlusCircle className="mr-2" /> Подписка не оформлена
-              </p>
-            )}
+
+          <div className="text-right text-[11px] leading-tight">
+            <div className="uppercase tracking-[0.18em]">
+              Личный кабинет
+            </div>
+            <div className="text-black/60">
+              {subscription ? (
+                <span className="inline-flex items-center">
+                  <FaCrown className="mr-1 text-[10px]" />
+                  {subscription.plan} · активная подписка
+                </span>
+              ) : (
+                <span className="inline-flex items-center">
+                  <FaPlusCircle className="mr-1 text-[10px]" />
+                  подписка не оформлена
+                </span>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-6xl mx-auto px-6 py-12">
-        <div className="grid lg:grid-cols-4 gap-8">
-          {/* ЛЕВАЯ КОЛОНКА: МЕНЮ */}
-          <motion.div initial={{ x: -20 }} animate={{ x: 0 }} className="lg:col-span-1 space-y-4 sticky top-20">
-            <div className="bg-white rounded-2xl p-6 shadow-xl">
-              <h3 className="text-xl font-bold text-emerald-800 mb-6">Меню</h3>
-              <nav className="space-y-2">
-                {[
-                  { icon: FaUser, label: 'Профиль', href: '#profile', active: true },
-                  ...(subscription ? [
-                    { icon: FaCreditCard, label: 'Платежи', href: '#payments' },
-                    { icon: FaFileInvoice, label: 'Чеки', href: '#receipts' },
-                  ] : []),
-                  { icon: FaBell, label: `Уведомления (${notifications})`, href: '#notifications' },
-                ].map((item, i) => (
-                  <Link 
-                    key={i} 
-                    to={item.href} 
-                    className={`flex items-center space-x-3 p-3 rounded-xl transition-all ${
-                      item.active 
-                        ? 'bg-emerald-50 text-emerald-700 border-l-4 border-emerald-500' 
-                        : 'text-emerald-600 hover:bg-emerald-50'
-                    }`}
-                  >
-                    <item.icon className="text-lg" />
-                    <span className="font-semibold">{item.label}</span>
-                  </Link>
-                ))}
-              </nav>
-            </div>
-          </motion.div>
-
-          {/* ПРАВАЯ КОЛОНКА: КОНТЕНТ */}
-          <motion.div initial={{ x: 20 }} animate={{ x: 0 }} className="lg:col-span-3 space-y-8">
-            
-            {/* 1. ПРОФИЛЬ */}
-            <section id="profile">
-              <div className="bg-white rounded-2xl p-8 shadow-xl">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-emerald-800 flex items-center">
-                    <FaUser className="mr-2" /> Личные данные
-                  </h2>
-                  <button 
-                    onClick={() => setEditMode(!editMode)}
-                    className="flex items-center space-x-2 text-emerald-600 hover:text-emerald-700"
-                  >
-                    <FaEdit />
-                    <span>{editMode ? 'Сохранить' : 'Редактировать'}</span>
-                  </button>
-                </div>
-
-                <form onSubmit={handleEditProfile} className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-emerald-700 font-semibold mb-2">ФИО</label>
-                      <input 
-                        type="text" 
-                        value={user.name} 
-                        className="w-full p-3 border border-emerald-200 rounded-xl focus:border-yellow-400" 
-                        disabled={!editMode}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-emerald-700 font-semibold mb-2">Email</label>
-                      <input 
-                        type="email" 
-                        value={user.email} 
-                        className="w-full p-3 border border-emerald-200 rounded-xl bg-gray-50" 
-                        disabled
-                      />
-                    </div>
-                  </div>
-                  {editMode && (
-                    <button 
-                      type="submit" 
-                      className="w-full bg-emerald-600 text-white py-3 rounded-xl font-bold hover:bg-emerald-700"
-                    >
-                      Сохранить изменения
-                    </button>
-                  )}
-                </form>
-              </div>
-            </section>
-
-            {/* 2. ПОДПИСКА (ПУСТАЯ ИЛИ АКТИВНАЯ) */}
-            <section id="orders">
-              <div className="bg-white rounded-2xl p-8 shadow-xl">
-                <h2 className="text-2xl font-bold text-emerald-800 mb-6 flex items-center">
-                  <FaCrown className="mr-2" /> Подписка
-                </h2>
-                
-                {subscription ? (
-                  // ✅ АКТИВНАЯ ПОДПИСКА
-                  <>
-                    <div className="bg-gradient-to-r from-emerald-50 to-yellow-50 p-6 rounded-xl mb-6">
-                      <div className="grid md:grid-cols-2 gap-6 text-center">
-                        <div>
-                          <div className="text-3xl font-black text-emerald-800">{subscription.plan}</div>
-                          <div className="text-emerald-600 mt-1">Тариф</div>
-                        </div>
-                        <div>
-                          <div className="text-3xl font-black text-yellow-600">{subscription.items}</div>
-                          <div className="text-yellow-600 mt-1">Товаров в месяц</div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-emerald-600">Стоимость:</span>
-                          <span className="font-black text-emerald-800">{subscription.price} ₽/мес</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-emerald-600">Начало:</span>
-                          <span className="font-black text-emerald-800">{subscription.startDate}</span>
-                        </div>
-                      </div>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-emerald-600">След. платеж:</span>
-                          <span className="font-black text-emerald-800">{subscription.nextPayment}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-emerald-600">Статус:</span>
-                          <span className="flex items-center space-x-2">
-                            <FaCheckCircle className="text-emerald-500" />
-                            <span className="font-black text-emerald-800">Активна</span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-6 pt-6 border-t border-emerald-200">
-                      <Link to="/subscription/popular" className="w-full bg-yellow-400 text-emerald-800 py-3 rounded-xl font-bold flex items-center justify-center space-x-2">
-                        <FaFileInvoice className="text-sm" />
-                        <span>Изменить подписку</span>
-                      </Link>
-                    </div>
-                  </>
-                ) : (
-                  // ✅ ПУСТАЯ ПОДПИСКА
-                  <div className="text-center py-12">
-                    <FaCrown className="text-6xl text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-2xl font-bold text-gray-600 mb-2">Подписка не оформлена</h3>
-                    <p className="text-gray-500 mb-8">Оформите подписку, чтобы начать получать коробки!</p>
-                    <Link 
-                      to="/subscription/popular" 
-                      className="bg-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-emerald-700 transition-all"
-                    >
-                      Оформить подписку
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </section>
-
-            {/* 3. ПОДДЕРЖКА (ТОЛЬКО ПРИ ПОДПИСКЕ) */}
-            {subscription && (
-              <section id="support">
-                <div className="bg-white rounded-2xl p-8 shadow-xl">
-                  <h2 className="text-2xl font-bold text-emerald-800 mb-6">Поддержка</h2>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <button 
-                      onClick={downloadReceipt}
-                      className="bg-yellow-400 text-emerald-800 p-4 rounded-xl flex items-center justify-center space-x-2 font-bold hover:bg-yellow-300"
-                    >
-                      <FaDownload className="text-lg" />
-                      <span>Скачать чек</span>
-                    </button>
-                    <button 
-                      onClick={sendSupport}
-                      className="bg-emerald-600 text-white p-4 rounded-xl flex items-center justify-center space-x-2 font-bold hover:bg-emerald-700"
-                    >
-                      <FaPhone className="text-lg" />
-                      <span>Связаться с поддержкой</span>
-                    </button>
-                  </div>
-                </div>
-              </section>
-            )}
-          </motion.div>
+      {/* TOP STRIP WITH NAV */}
+      <div className="border-b border-black/10">
+        <div className="max-w-6xl mx-auto px-6 py-3 flex flex-wrap gap-4 text-[11px] uppercase tracking-[0.18em]">
+          {[
+            { id: "profile", label: "Профиль" },
+            { id: "subscription", label: "Подписка" },
+            { id: "documents", label: "Документы" },
+            { id: "notifications", label: "Уведомления" },
+          ].map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => scrollToSection(item.id)}
+              className={`px-3 py-1 border ${
+                activeSection === item.id
+                  ? "border-black bg-black text-white"
+                  : "border-transparent hover:border-black/40"
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
       </div>
+
+      {/* CONTENT */}
+      <main className="max-w-6xl mx-auto px-6 py-10 grid lg:grid-cols-[260px,1fr] gap-10">
+        {/* LEFT COLUMN */}
+        <aside className="space-y-6 lg:sticky lg:top-24 self-start">
+          {/* карточка пользователя */}
+          <div className="border border-black p-5 text-[12px]">
+            <div className="flex items-center mb-4">
+              <div className="w-12 h-12 border border-black flex items-center justify-center mr-4">
+                <FaUser className="text-lg" />
+              </div>
+              <div className="leading-tight">
+                <div className="font-semibold uppercase text-[11px]">
+                  {user.name}
+                </div>
+                <div className="text-black/60 text-[11px] break-all">
+                  {user.email}
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-between text-[11px] mt-1">
+              <span className="text-black/60">Подписка</span>
+              <span className="font-semibold uppercase">
+                {subscription ? "активна" : "нет"}
+              </span>
+            </div>
+            <div className="mt-4">
+              <Link
+                to={subscription ? "/subscription/manage" : "/subscription/popular"}
+                className="block border border-black px-3 py-2 text-center text-[10px] uppercase tracking-[0.18em] hover:bg-black hover:text-white transition-colors"
+              >
+                {subscription ? "управлять подпиской" : "оформить подписку"}
+              </Link>
+            </div>
+          </div>
+
+          {/* небольшая статистика */}
+          {subscription && (
+            <div className="border border-black p-5 text-[11px] space-y-2">
+              <div className="flex justify-between">
+                <span className="text-black/60">Тариф</span>
+                <span className="font-semibold uppercase">
+                  {subscription.plan}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-black/60">Ежемесячно</span>
+                <span className="font-semibold">
+                  {subscription.price} ₽ · {subscription.items} товар(ов)
+                </span>
+              </div>
+            </div>
+          )}
+        </aside>
+
+        {/* RIGHT COLUMN */}
+        <section className="space-y-10">
+          {/* PROFILE */}
+          <section id="profile" className="border border-black p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-sm font-bold uppercase tracking-[0.18em]">
+                Профиль
+              </h2>
+              <button
+                type="button"
+                onClick={() => setEditMode((v) => !v)}
+                className="flex items-center text-[11px] uppercase tracking-[0.18em] hover:opacity-60"
+              >
+                <FaEdit className="mr-1 text-[10px]" />
+                {editMode ? "отменить" : "редактировать"}
+              </button>
+            </div>
+
+            <form
+              onSubmit={handleEditProfile}
+              className="space-y-5 text-[13px] max-w-xl"
+            >
+              <div>
+                <label className="block text-[11px] uppercase tracking-[0.18em] mb-2">
+                  ФИО
+                </label>
+                <input
+                  type="text"
+                  value={profileForm.name}
+                  disabled={!editMode}
+                  onChange={(e) =>
+                    setProfileForm((f) => ({ ...f, name: e.target.value }))
+                  }
+                  className={`w-full border border-black px-3 py-2 text-sm outline-none ${
+                    editMode ? "bg-white" : "bg-neutral-100"
+                  }`}
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] uppercase tracking-[0.18em] mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={profileForm.email}
+                  disabled
+                  className="w-full border border-black px-3 py-2 text-sm bg-neutral-100 outline-none"
+                />
+              </div>
+
+              {editMode && (
+                <button
+                  type="submit"
+                  className="mt-4 border border-black px-6 py-3 text-[11px] uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-colors"
+                >
+                  Сохранить изменения
+                </button>
+              )}
+            </form>
+          </section>
+
+          {/* SUBSCRIPTION */}
+          <section id="subscription" className="border border-black p-8">
+            <h2 className="text-sm font-bold uppercase tracking-[0.18em] mb-6 flex items-center">
+              <FaCrown className="mr-2 text-[12px]" />
+              Подписка
+            </h2>
+
+            {subscription ? (
+              <div className="space-y-6 text-[13px]">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="border border-black p-4">
+                    <div className="text-[11px] uppercase text-black/60">
+                      Тариф
+                    </div>
+                    <div className="mt-1 font-semibold uppercase">
+                      {subscription.plan}
+                    </div>
+                  </div>
+                  <div className="border border-black p-4">
+                    <div className="text-[11px] uppercase text-black/60">
+                      Стоимость
+                    </div>
+                    <div className="mt-1 font-semibold">
+                      {subscription.price} ₽ / месяц
+                    </div>
+                  </div>
+                  <div className="border border-black p-4">
+                    <div className="text-[11px] uppercase text-black/60">
+                      Товаров в коробке
+                    </div>
+                    <div className="mt-1 font-semibold">
+                      {subscription.items}
+                    </div>
+                  </div>
+                  <div className="border border-black p-4">
+                    <div className="text-[11px] uppercase text-black/60">
+                      Статус
+                    </div>
+                    <div className="mt-1 font-semibold flex items-center">
+                      <FaCheckCircle className="mr-1 text-[11px]" />
+                      Активна
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6 text-[12px]">
+                  <div className="border border-black p-4">
+                    <div className="text-[11px] uppercase text-black/60">
+                      Начало подписки
+                    </div>
+                    <div className="mt-1">
+                      {subscription.startDate || "—"}
+                    </div>
+                  </div>
+                  <div className="border border-black p-4">
+                    <div className="text-[11px] uppercase text-black/60">
+                      Следующий платёж
+                    </div>
+                    <div className="mt-1">
+                      {subscription.nextPayment || "—"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-black/10 flex flex-wrap gap-3">
+                  <Link
+                    to="/subscription/manage"
+                    className="border border-black px-5 py-3 inline-flex items-center text-[11px] uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-colors"
+                  >
+                    <FaFileInvoice className="mr-2 text-[10px]" />
+                    Управлять подпиской
+                  </Link>
+                  <Link
+                    to="/box"
+                    className="border border-black px-5 py-3 inline-flex items-center text-[11px] uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-colors"
+                  >
+                    <FaCreditCard className="mr-2 text-[10px]" />
+                    Изменить состав коробки
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="text-[13px]">
+                <p className="mb-4 text-black/70">
+                  У вас нет активной подписки. Оформите её, чтобы получать
+                  коробки каждый месяц.
+                </p>
+                <Link
+                  to="/subscription/popular"
+                  className="border border-black px-6 py-3 inline-flex items-center text-[11px] uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-colors"
+                >
+                  <FaPlusCircle className="mr-2 text-[10px]" />
+                  Оформить подписку
+                </Link>
+              </div>
+            )}
+          </section>
+
+          {/* DOCUMENTS & SUPPORT */}
+          <section id="documents" className="border border-black p-8">
+            <h2 className="text-sm font-bold uppercase tracking-[0.18em] mb-6">
+              Документы и поддержка
+            </h2>
+
+            <div className="grid md:grid-cols-2 gap-6 text-[12px]">
+              <button
+                type="button"
+                onClick={generateReceipt}
+                className="border border-black px-4 py-3 flex items-center justify-center tracking-[0.18em] uppercase hover:bg-black hover:text-white transition-colors"
+              >
+                <FaDownload className="mr-2 text-[10px]" />
+                Скачать чек PDF
+              </button>
+
+              <Link
+                to="/contacts"
+                className="border border-black px-4 py-3 flex items-center justify-center tracking-[0.18em] uppercase hover:bg-black hover:text-white transition-colors"
+              >
+                <FaPhone className="mr-2 text-[10px]" />
+                Связаться с поддержкой
+              </Link>
+            </div>
+
+            <p className="mt-6 text-[11px] text-black/60">
+              Детали доставок, адреса и история заказов доступны в разделе
+              «Подписка» и будут дополняться по мере развития сервиса.
+            </p>
+          </section>
+
+          {/* NOTIFICATIONS */}
+          <section id="notifications" className="border border-black p-8">
+            <h2 className="text-sm font-bold uppercase tracking-[0.18em] mb-6 flex items-center">
+              <FaBell className="mr-2 text-[11px]" />
+              Уведомления
+            </h2>
+            <p className="text-[13px] text-black/70">
+              Сейчас у вас нет новых уведомлений. Мы сообщим о следующем
+              списании, сборке коробки и отправке заказа.
+            </p>
+          </section>
+        </section>
+      </main>
     </motion.div>
   );
 };
