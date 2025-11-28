@@ -262,14 +262,7 @@ const Profile = () => {
                 {subscription ? "активна" : "нет"}
               </span>
             </div>
-            <div className="mt-4">
-              <Link
-                to={subscription ? "/subscription/manage" : "/subscription/popular"}
-                className="block border border-black px-3 py-2 text-center text-[10px] uppercase tracking-[0.18em] hover:bg-black hover:text-white transition-colors"
-              >
-                {subscription ? "управлять подпиской" : "оформить подписку"}
-              </Link>
-            </div>
+        
           </div>
 
           {/* небольшая статистика */}
@@ -299,14 +292,7 @@ const Profile = () => {
               <h2 className="text-sm font-bold uppercase tracking-[0.18em]">
                 Профиль
               </h2>
-              <button
-                type="button"
-                onClick={() => setEditMode((v) => !v)}
-                className="flex items-center text-[11px] uppercase tracking-[0.18em] hover:opacity-60"
-              >
-                <FaEdit className="mr-1 text-[10px]" />
-                {editMode ? "отменить" : "редактировать"}
-              </button>
+              
             </div>
 
             <form
@@ -315,7 +301,7 @@ const Profile = () => {
             >
               <div>
                 <label className="block text-[11px] uppercase tracking-[0.18em] mb-2">
-                  ФИО
+                  ВАШЕ ИМЯ
                 </label>
                 <input
                   type="text"
@@ -417,22 +403,7 @@ const Profile = () => {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-black/10 flex flex-wrap gap-3">
-                  <Link
-                    to="/subscription/manage"
-                    className="border border-black px-5 py-3 inline-flex items-center text-[11px] uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-colors"
-                  >
-                    <FaFileInvoice className="mr-2 text-[10px]" />
-                    Управлять подпиской
-                  </Link>
-                  <Link
-                    to="/box"
-                    className="border border-black px-5 py-3 inline-flex items-center text-[11px] uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-colors"
-                  >
-                    <FaCreditCard className="mr-2 text-[10px]" />
-                    Изменить состав коробки
-                  </Link>
-                </div>
+               
               </div>
             ) : (
               <div className="text-[13px]">

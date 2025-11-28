@@ -95,7 +95,7 @@ const Returns = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // здесь могла бы быть отправка на сервер
+    // тут могла бы быть отправка на сервер
     setStep(2);
   };
 
@@ -105,10 +105,10 @@ const Returns = () => {
       animate={{ opacity: 1 }}
       className="min-h-screen bg-white text-black"
     >
-      {/* HEADER */}
+      {/* HEADER / КРОШКИ */}
       <header className="border-b border-black/10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3 text-xs">
+          <div className="flex items-center gap-3 text-[11px]">
             <Link
               to="/"
               className="uppercase tracking-[0.25em] text-black/60 hover:text-black transition-colors flex items-center"
@@ -127,56 +127,116 @@ const Returns = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* HERO */}
-        <section className="border-b border-black/10 pb-10 mb-12 text-center">
-          <p className="text-[11px] uppercase tracking-[0.3em] text-black/50 mb-3">
-            Правила возврата и обмена
-          </p>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight uppercase mb-3">
-            Возврат и обмен
-          </h1>
-          <p className="text-sm md:text-base text-black/60 max-w-2xl mx-auto mb-4">
-            Если что-то пошло не так, мы постараемся решить вопрос максимально
-            просто. Ниже — условия, расчёт возврата и форма заявки.
-          </p>
-          <div className="flex items-center justify-center gap-3 text-xl">
-            <FaUndo />
-            <FaCheckCircle />
-          </div>
+      <main className="max-w-7xl mx-auto px-6 pb-18">
+        {/* HERO — ЧЁРНЫЙ БЛОК */}
+        <section className="mt-10 mb-14">
+          <motion.div
+            initial={{ y: 18, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="bg-black text-white border border-black"
+          >
+            <div className="grid md:grid-cols-[3fr,2fr]">
+              {/* ЛЕВАЯ ЧАСТЬ */}
+              <div className="px-8 lg:px-10 py-9 lg:py-11 border-b md:border-b-0 md:border-r border-white/10">
+                <p className="text-[11px] uppercase tracking-[0.3em] text-white/55 mb-3">
+                  Правила возврата и обмена
+                </p>
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight uppercase mb-4">
+                  Возврат и обмен
+                </h1>
+                <p className="text-[13px] md:text-sm text-white/75 max-w-xl mb-5">
+                  Если что-то пошло не так, мы постараемся решить вопрос
+                  максимально просто. Ниже — условия, калькулятор и форма
+                  возврата.
+                </p>
+
+                <div className="inline-flex items-center gap-3 border border-white/25 px-4 py-2 text-[11px] uppercase tracking-[0.25em]">
+                  <span className="bg-white text-black px-3 py-1 text-[10px] font-semibold">
+                    14 дней
+                  </span>
+                  <span className="text-white/75">на возврат без объяснений</span>
+                </div>
+              </div>
+
+              {/* ПРАВАЯ ЧАСТЬ — ЦИФРЫ */}
+              <div className="px-8 lg:px-10 py-8 lg:py-10 bg-black/90 text-xs">
+                <div className="grid grid-rows-3 gap-5">
+                  <div className="flex items-center justify-between border-b border-white/15 pb-4">
+                    <span className="uppercase tracking-[0.25em] text-white/60">
+                      При браке
+                    </span>
+                    <span className="text-2xl font-semibold">100%</span>
+                  </div>
+                  <div className="flex items-center justify-between border-b border-white/15 pb-4">
+                    <span className="uppercase tracking-[0.25em] text-white/60">
+                      Срок зачисления
+                    </span>
+                    <span className="text-2xl font-semibold">до 5 дн.</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="uppercase tracking-[0.25em] text-white/60">
+                      Формат
+                    </span>
+                    <span className="text-2xl font-semibold">Онлайн</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </section>
 
         {/* УСЛОВИЯ ВОЗВРАТА */}
-        <section className="mb-12">
-          <h2 className="text-xs uppercase tracking-[0.3em] text-black/60 mb-4">
-            Условия возврата
-          </h2>
+        <section className="mb-16">
+          <div className="flex items-end justify-between gap-4 mb-6">
+            <div>
+              <h2 className="text-[11px] uppercase tracking-[0.3em] text-black/70 mb-2">
+                Условия возврата
+              </h2>
+              <p className="text-[13px] text-black/60 max-w-md">
+                Размер компенсации зависит от состояния товара и причины
+                возврата. Ниже — основные сценарии.
+              </p>
+            </div>
+            <p className="hidden md:block text-[11px] text-black/45">
+              Подробная информация дублируется в чек-листе, который придёт на email.
+            </p>
+          </div>
+
           <div className="grid md:grid-cols-5 gap-4 text-sm">
             {returnRules.map((rule, index) => (
               <div
                 key={index}
-                className="border border-black/10 px-4 py-4 text-center"
+                className="border border-black/12 px-4 py-5 text-center"
               >
-                <div className="text-lg font-semibold mb-1">{rule.refund}</div>
+                <div className="text-xl font-semibold mb-1">{rule.refund}</div>
                 <p className="text-[13px] text-black/80 mb-1">
                   {rule.condition}
                 </p>
-                <p className="text-[11px] text-black/50">{rule.days}</p>
+                <p className="text-[11px] text-black/50 uppercase tracking-[0.15em]">
+                  {rule.days}
+                </p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* КАЛЬКУЛЯТОР */}
-        <section className="mb-16">
-          <h2 className="text-xs uppercase tracking-[0.3em] text-black/60 mb-4 flex items-center gap-2">
-            <FaCalculator className="text-[11px]" />
-            Калькулятор возврата
-          </h2>
-          <div className="border border-black/10 px-6 py-6 text-sm">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.25em] text-black/60 mb-2">
+        {/* КАЛЬКУЛЯТОР ВОЗВРАТА — ЧЁРНЫЙ БЛОК */}
+        <section className="mb-16 space-y-6">
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="text-[11px] uppercase tracking-[0.3em] text-black/70 flex items-center gap-2">
+              <FaCalculator className="text-[11px]" />
+              Калькулятор возврата
+            </h2>
+            <p className="hidden md:block text-[11px] text-black/55">
+              Расчёт примерный — точную сумму вы увидите в подтверждении заявки.
+            </p>
+          </div>
+
+          <div className="border border-black bg-black text-white">
+            <div className="grid md:grid-cols-[2fr,1.5fr]">
+              {/* ЛЕВАЯ ЧАСТЬ — ВВОД ДАННЫХ */}
+              <div className="px-6 lg:px-8 py-7 border-b md:border-b-0 md:border-r border-white/10">
+                <p className="text-[11px] uppercase tracking-[0.25em] text-white/65 mb-2">
                   Сумма заказа
                 </p>
                 <input
@@ -184,17 +244,16 @@ const Returns = () => {
                   min="0"
                   value={orderAmount}
                   onChange={handleAmountChange}
-                  className="w-full border border-black/20 px-3 py-3 text-sm focus:outline-none focus:border-black"
+                  className="w-full md:w-80 border border-white/40 bg-transparent px-3 py-2.5 text-sm focus:outline-none focus:border-white"
                 />
-              </div>
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.25em] text-black/60 mb-2">
+
+                <p className="text-[11px] uppercase tracking-[0.25em] text-white/65 mt-5 mb-2">
                   Причина возврата
                 </p>
                 <select
                   value={formData.reason}
                   onChange={(e) => handleReasonChange(e.target.value)}
-                  className="w-full border border-black/20 px-3 py-3 text-sm focus:outline-none focus:border-black"
+                  className="w-full md:w-80 border border-white/40 bg-black px-3 py-2.5 text-sm focus:outline-none focus:border-white"
                 >
                   <option value="">Выберите причину</option>
                   {returnRules.map((rule, i) => (
@@ -203,19 +262,37 @@ const Returns = () => {
                     </option>
                   ))}
                 </select>
-              </div>
-            </div>
 
-            <div className="mt-6 text-center">
-              <p className="text-[11px] uppercase tracking-[0.25em] text-black/60 mb-2">
-                Ориентировочная сумма возврата
-              </p>
-              <div className="text-2xl font-semibold mb-1">
-                {calculatedRefund} ₽
+                <p className="text-[11px] text-white/55 mt-3 max-w-md">
+                  При браке и неправильном товаре мы возвращаем полную сумму и
+                  компенсируем обратную доставку.
+                </p>
               </div>
-              <p className="text-[11px] text-black/50">
-                Точная сумма будет указана в подтверждении заявки.
-              </p>
+
+              {/* ПРАВАЯ ЧАСТЬ — РЕЗУЛЬТАТ */}
+              <div className="px-6 lg:px-8 py-7 flex flex-col justify-between">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.25em] text-white/65 mb-2">
+                    Ориентировочная сумма возврата
+                  </p>
+                  <div className="inline-flex items-baseline gap-2">
+                    <span className="text-3xl font-semibold">
+                      {calculatedRefund} ₽
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-white/55 mt-2 max-w-md">
+                    Итоговая сумма может отличаться, если в заказе было несколько
+                    позиций или использован промокод.
+                  </p>
+                </div>
+
+                <div className="mt-5 text-[11px] text-white/60 flex items-center gap-2">
+                  <FaCheckCircle className="text-[12px]" />
+                  <span>
+                    Деньги возвращаем на ту же карту, с которой была оплата.
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -223,13 +300,19 @@ const Returns = () => {
         {/* ФОРМА ВОЗВРАТА / ШАГ 1 */}
         {step === 1 && (
           <section className="mb-16">
-            <h2 className="text-xs uppercase tracking-[0.3em] text-black/60 mb-4 text-left">
-              Оформить возврат
-            </h2>
+            <div className="flex items-end justify-between gap-4 mb-6">
+              <h2 className="text-[11px] uppercase tracking-[0.3em] text-black/70">
+                Оформить возврат онлайн
+              </h2>
+              <p className="hidden md:block text-[11px] text-black/55">
+                После отправки заявки вы получите инструкцию и этикетку на email.
+              </p>
+            </div>
+
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="border border-black/10 px-6 py-6 text-sm"
+              className="border border-black/12 px-6 py-7 text-sm"
             >
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
@@ -318,22 +401,28 @@ const Returns = () => {
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="border border-black/10 px-6 py-10 text-center text-sm"
+              className="border border-black/12 px-6 py-10 text-center text-sm"
             >
               <div className="text-3xl mb-3">✓</div>
               <p className="text-xs uppercase tracking-[0.3em] text-black/60 mb-3">
                 Заявка отправлена
               </p>
-              <p className="text-sm text-black/75 mb-4">
-                Мы проверим данные и отправим этикетку для возврата на ваш
-                email в течение рабочего дня.
+              <p className="text-sm text-black/75 mb-4 max-w-md mx-auto">
+                Мы проверим данные и отправим этикетку для возврата на ваш email
+                в течение рабочего дня.
               </p>
-              <div className="border border-black/10 px-4 py-4 max-w-sm mx-auto mb-6 text-left text-[13px]">
+              <div className="border border-black/12 px-4 py-4 max-w-sm mx-auto mb-6 text-left text-[13px]">
                 <p className="mb-1">
-                  Номер заказа: <span className="font-semibold">{formData.orderNumber || '—'}</span>
+                  Номер заказа:{' '}
+                  <span className="font-semibold">
+                    {formData.orderNumber || '—'}
+                  </span>
                 </p>
                 <p className="mb-1">
-                  Причина: <span className="font-semibold">{formData.reason || '—'}</span>
+                  Причина:{' '}
+                  <span className="font-semibold">
+                    {formData.reason || '—'}
+                  </span>
                 </p>
                 <p className="text-black/60 text-[11px]">
                   Если вы указали неверные данные, напишите нам в поддержку.
@@ -359,7 +448,7 @@ const Returns = () => {
 
         {/* 5 ШАГОВ */}
         <section className="mb-16">
-          <h2 className="text-xs uppercase tracking-[0.3em] text-black/60 mb-4 text-left">
+          <h2 className="text-[11px] uppercase tracking-[0.3em] text-black/70 mb-4">
             Как это работает
           </h2>
           <div className="grid md:grid-cols-5 gap-4 text-xs">
@@ -368,7 +457,7 @@ const Returns = () => {
                 key={index}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="border border-black/10 px-4 py-4 text-center"
+                className="border border-black/12 px-4 py-4 text-center"
               >
                 <div className="mb-2 flex items-center justify-center gap-2">
                   <span className="text-[11px] font-semibold">{s.number}</span>
@@ -385,8 +474,8 @@ const Returns = () => {
 
         {/* КОРОТКИЙ FAQ */}
         <section className="mb-16">
-          <h2 className="text-xs uppercase tracking-[0.3em] text-black/60 mb-4">
-            Частые вопросы
+          <h2 className="text-[11px] uppercase tracking-[0.3em] text-black/70 mb-4">
+            Частые вопросы по возвратам
           </h2>
           <div className="space-y-3 text-sm">
             {[
@@ -409,23 +498,23 @@ const Returns = () => {
             ].map((item, i) => (
               <div
                 key={i}
-                className="border border-black/10 px-5 py-4 text-[13px]"
+                className="border border-black/12 px-5 py-4 text-[13px]"
               >
                 <p className="font-semibold mb-1">{item.q}</p>
-                <p className="text-black/75">{item.a}</p>
+                <p className="text-black/75 leading-relaxed">{item.a}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* CTA */}
-        <section className="border-t border-black/10 pt-10 pb-4 text-center">
+        <section className="border-t border-black/10 pt-10 pb-8 text-center">
           <p className="text-[11px] uppercase tracking-[0.3em] text-black/60 mb-3">
             Нужна помощь
           </p>
           <p className="text-sm text-black/70 mb-5">
-            Если у вас нестандартная ситуация, напишите в поддержку или
-            позвоните нам — разберёмся и подберём решение.
+            Если ситуация нестандартная, напишите в поддержку или позвоните —
+            разберёмся и найдём решение.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <a

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaStar, FaArrowRight } from 'react-icons/fa';
@@ -13,12 +13,9 @@ const POPULAR_PRODUCTS = [
   { id: 6, title: 'Эко-шампунь', price: 420, image: '/images/shampoo.jpg', rating: 4.6 },
   { id: 7, title: 'Хлопковая сумка', price: 450, image: '/images/5555.jpg', rating: 4.9 },
   { id: 8, title: 'Натуральный дезодорант', price: 320, image: '/images/6666.jpg', rating: 4.7 },
-
 ];
 
 const Home = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -26,55 +23,61 @@ const Home = () => {
       className="bg-white text-black"
     >
 
-      {/* HERO */}
-      <section className="pt-28 pb-20 border-b border-black/10">
+      {/* HERO — ЛЁГКИЙ, АКЦЕНТНЫЙ, ЧИСТЫЙ */}
+      <section className="pt-32 pb-24 border-b border-black/10">
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-20 items-center">
 
           {/* TEXT */}
           <motion.div
-            initial={{ x: -40, opacity: 0 }}
+            initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            className="space-y-8"
+            className="space-y-10"
           >
-            <h1 className="text-6xl font-extrabold tracking-tight uppercase">
-              Экологичные товары
+            <p className="text-[11px] uppercase tracking-[0.3em] text-black/50">
+              Экотовары нового поколения
+            </p>
+
+            <h1 className="text-5xl md:text-6xl font-extrabold leading-tight tracking-tight uppercase">
+              Чистые<br /> 
+              ингредиенты.<br />
+              Чистый дом.
             </h1>
 
-            <p className="text-2xl font-light leading-snug">
- Поставляем каждый месяц более 500 коробок своим любимым клиентам          
-</p>
+            <p className="text-lg text-black/70 max-w-md leading-relaxed">
+              Натуральные средства, товары для ухода и экотовары, которые приходят к вам автоматически — по подписке.
+            </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 to="/subscription/popular"
-                className="border border-black px-10 py-4 text-lg font-semibold uppercase hover:bg-black hover:text-white transition-all"
+                className="border border-black px-10 py-4 text-sm font-semibold uppercase tracking-wider hover:bg-black hover:text-white transition-all"
               >
                 Оформить подписку
               </Link>
 
               <Link
                 to="/products"
-                className="px-10 py-4 border border-black text-lg font-semibold uppercase hover:bg-black hover:text-white transition-all"
+                className="border border-black px-10 py-4 text-sm font-semibold uppercase tracking-wider hover:bg-black hover:text-white transition-all"
               >
                 Каталог
               </Link>
             </div>
 
-            <div className="flex items-center text-black/60 text-sm">
+            <div className="flex items-center text-black/50 text-sm">
               <FaStar className="mr-2" />
-              4.9 / 5 • 5000+ клиентов
+              Рейтинг 4.9 • 5000+ клиентов
             </div>
           </motion.div>
 
-          {/* IMAGE / BIG HERO PHOTO */}
+          {/* IMAGE */}
           <motion.div
-            initial={{ x: 40, opacity: 0 }}
+            initial={{ x: 20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             className="hidden lg:block"
           >
             <img
               src="/images/promik.jpg"
-              className="w-full object-cover"
+              className="w-full h-[550px] object-cover"
               alt="EcoBox Promo"
             />
           </motion.div>
@@ -86,7 +89,7 @@ const Home = () => {
       <section className="py-24 border-b border-black/10">
         <div className="max-w-7xl mx-auto px-6">
 
-          <h2 className="text-5xl font-extrabold uppercase text-center mb-16">
+          <h2 className="text-4xl font-extrabold uppercase text-center mb-12">
             Популярные товары
           </h2>
 
@@ -94,14 +97,13 @@ const Home = () => {
             {POPULAR_PRODUCTS.map((product, i) => (
               <motion.div
                 key={product.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                whileHover={{ y: -5 }}
-                className="border border-black/20 p-6 cursor-pointer hover:border-black transition-all"
+                whileHover={{ y: -3 }}
+                className="border border-black/20 p-6 hover:border-black transition-all"
               >
                 <Link to={`/product/${product.id}`}>
-
                   <img
                     src={product.image}
                     alt={product.title}
@@ -116,9 +118,11 @@ const Home = () => {
                     {[...Array(5)].map((_, j) => (
                       <FaStar
                         key={j}
-                        className={j < Math.floor(product.rating)
-                          ? 'text-black'
-                          : 'text-gray-300'}
+                        className={
+                          j < Math.floor(product.rating)
+                            ? 'text-black'
+                            : 'text-gray-300'
+                        }
                       />
                     ))}
                     <span className="ml-2 text-sm text-black/60">
@@ -128,7 +132,7 @@ const Home = () => {
 
                   <div className="flex justify-between items-center">
                     <span className="text-xl font-bold">{product.price} ₽</span>
-                    <FaArrowRight className="opacity-60 group-hover:opacity-100" />
+                    <FaArrowRight className="opacity-50 group-hover:opacity-100" />
                   </div>
 
                 </Link>
@@ -139,7 +143,7 @@ const Home = () => {
           <div className="text-center mt-16">
             <Link
               to="/products"
-              className="inline-flex items-center gap-2 border border-black px-10 py-4 text-lg font-semibold uppercase hover:bg-black hover:text-white transition-all"
+              className="inline-flex items-center gap-2 border border-black px-10 py-4 text-sm font-semibold uppercase hover:bg-black hover:text-white transition-all"
             >
               Смотреть все
               <FaArrowRight />
@@ -150,9 +154,9 @@ const Home = () => {
       </section>
 
       {/* REVIEWS */}
-      <section className="py-24 border-b border-black/10">
+      <section className="py-24 border-b border-black/10 bg-black text-white">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-black uppercase mb-12">
+          <h2 className="text-4xl font-extrabold uppercase mb-12">
             Отзывы клиентов
           </h2>
           <ReviewsCarousel />
@@ -161,16 +165,16 @@ const Home = () => {
 
       {/* FINAL CTA */}
       <section className="py-24 text-center">
-        <h2 className="text-5xl font-extrabold uppercase mb-8">
+        <h2 className="text-4xl md:text-5xl font-extrabold uppercase mb-6">
           Готовы начать?
         </h2>
-        <p className="text-xl mb-10">
-          Первая коробка будет у вас уже через <span className="font-bold">3 дня</span>
+        <p className="text-xl mb-10 text-black/70">
+          Первая коробка будет у вас уже через <span className="font-semibold">3 дня</span>.
         </p>
 
         <Link
           to="/subscription/popular"
-          className="border border-black px-12 py-5 text-xl font-semibold uppercase hover:bg-black hover:text-white transition-all"
+          className="border border-black px-12 py-5 text-base font-semibold uppercase tracking-wider hover:bg-black hover:text-white transition-all"
         >
           Оформить подписку
         </Link>

@@ -10,10 +10,10 @@ const STORY_IMAGE = "/images/shop.jpg";
 
 // ❗ Вставь рабочие пути к картинкам
 const team = [
-  { name: "Анна Иванова", role: "Основатель & CEO", photo: "/images/client1.jpg" },
-  { name: "Михаил Петров", role: "Эко-эксперт", photo: "/images/client2.jpg" },
-  { name: "Елена Сидорова", role: "Логистика", photo: "/images/client3.jpg" },
-  { name: "Дмитрий Козлов", role: "Маркетинг", photo: "/images/client4.jpg" }
+  { name: "Анна Иванова", role: "CEO специалист", photo: "/images/6666.png" },
+  { name: "Михаил Петров", role: "Эко-эксперт", photo: "/images/9999.png" },
+  { name: "Елена Сидорова", role: "Логистика", photo: "/images/7777.png" },
+  { name: "Дмитрий Козлов", role: "Маркетинг", photo: "/images/8888.png" }
 ];
 
 // ❗ Партнёры

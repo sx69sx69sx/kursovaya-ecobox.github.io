@@ -41,11 +41,8 @@ const PLANS = {
     price: 1611,
     originalPrice: 2290,
     features: [
-      '8 отобранных эко-товаров',
-      'Бесплатная доставка',
+      'Только нужные эко-товары',
       'Эко-упаковка',
-      'Бонусный продукт в каждой коробке',
-      'Пауза / отмена',
       'Поддержка',
       'Персональные рекомендации'
     ],
@@ -57,14 +54,10 @@ const PLANS = {
     price: 1990,
     originalPrice: 2990,
     features: [
-      '12 премиальных эко-товаров',
-      'Бесплатная ч/б-упаковка',
-      '2 бонусных продукта',
-      'Пауза / отмена',
-      'Приоритетная поддержка',
-      'Персональные рекомендации',
-      'Персональный менеджер',
-      'Подарок на день рождения'
+      'Только нужные эко-товары',
+      'Эко-упаковка',
+      'Поддержка',
+      'Персональные рекомендации'
     ],
     badge: 'PREMIUM'
   }
@@ -120,18 +113,21 @@ const SubscriptionDetail = () => {
     switch (name) {
       case 'name':
         return value.trim().length < 2 ? 'Минимум 2 символа' : '';
-      case 'phone':
-        return !/^(\+7|7|8)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/.test(
-          value.replace(/\D/g, '')
-        )
+      case 'phone': {
+        const digits = value.replace(/\D/g, '');
+        // ожидаем 11 цифр для РФ
+        return digits.length < 10 || digits.length > 11
           ? 'Неверный формат телефона'
           : '';
+      }
       case 'city':
         return !value ? 'Выберите город' : '';
       case 'address':
         return value.trim().length < 5 ? 'Укажите полный адрес' : '';
-      case 'cardNumber':
-        return value.replace(/\s/g, '').length !== 16 ? '16 цифр карты' : '';
+      case 'cardNumber': {
+        const digits = value.replace(/\s/g, '');
+        return digits.length !== 16 ? '16 цифр карты' : '';
+      }
       case 'expiry':
         return !/^(0[1-9]|1[0-2])\/\d{2}$/.test(value)
           ? 'Формат MM/YY'
@@ -156,7 +152,7 @@ const SubscriptionDetail = () => {
     }));
 
     const isValid = Object.values(newErrors).every((err) => !err);
-    return { isValid, newErrors };
+    return { isValid };
   };
 
   const handleInputChange = (e) => {
@@ -246,7 +242,7 @@ const SubscriptionDetail = () => {
           address: `${formData.city}, ${formData.address}`
         }
       });
-    }, 2000);
+    }, 1500);
   };
 
   const getInputClass = (name) => {
@@ -254,12 +250,12 @@ const SubscriptionDetail = () => {
     const hasValue = formData[name];
 
     return [
-      'w-full p-3 border text-sm transition-all duration-200 focus:outline-none',
+      'w-full h-11 px-3 border text-sm transition-all duration-150 focus:outline-none',
       hasError
         ? 'border-red-500 bg-red-50'
         : hasValue
         ? 'border-black bg-black/5'
-        : 'border-black/15 hover:border-black/50 focus:border-black'
+        : 'border-black/20 hover:border-black focus:border-black'
     ].join(' ');
   };
 
@@ -305,12 +301,13 @@ const SubscriptionDetail = () => {
 
           {/* СХЕМА: коробка → данные → оплата */}
           <div className="mt-8 flex items-center justify-center gap-8 text-[11px] uppercase tracking-[0.25em] text-black/50">
-            {/* 1: коробка */}
             <div className="flex items-center gap-3">
               <div
                 className={[
                   'w-7 h-7 border flex items-center justify-center text-[10px]',
-                  totalItems >= 5 ? 'bg-black text-white border-black' : 'border-black/40'
+                  totalItems >= 5
+                    ? 'bg-black text-white border-black'
+                    : 'border-black/40'
                 ].join(' ')}
               >
                 1
@@ -320,7 +317,6 @@ const SubscriptionDetail = () => {
               </span>
             </div>
             <div className="w-10 h-px bg-black/20" />
-            {/* 2: данные */}
             <div className="flex items-center gap-3">
               <div
                 className={[
@@ -333,7 +329,6 @@ const SubscriptionDetail = () => {
               <span>Данные</span>
             </div>
             <div className="w-10 h-px bg-black/20" />
-            {/* 3: оплата */}
             <div className="flex items-center gap-3">
               <div
                 className={[
@@ -354,9 +349,9 @@ const SubscriptionDetail = () => {
         <div className="grid lg:grid-cols-3 gap-12">
           {/* ЛЕВАЯ КОЛОНКА */}
           <motion.div
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
             className="lg:col-span-2 space-y-8"
           >
             {totalItems >= 5 ? (
@@ -392,14 +387,14 @@ const SubscriptionDetail = () => {
                       className="flex items-center justify-between px-4 py-3 border border-black/10 bg-black/5"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 border border-black/20 flex items-center justify-center text-xs bg-white">
+                        <div className="w-10 h-10 border border-black/20 bg-white overflow-hidden">
                           {item.image && (
-            <img
-              src={item.image}
-              alt={item.title}
-              className="w-full h-full object-cover"
-            />
-          )}
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
                         </div>
                         <div>
                           <h4 className="text-sm font-medium uppercase tracking-wide">
@@ -463,114 +458,156 @@ const SubscriptionDetail = () => {
 
           {/* ПРАВАЯ КОЛОНКА: ФОРМА */}
           <motion.div
-            initial={{ x: 20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.4, ease: 'easeOut', delay: 0.05 }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: 'easeOut', delay: 0.05 }}
             className="space-y-8"
           >
-            <section className="border border-black/10 p-8 bg-white sticky top-20">
-              <div className="flex items-center justify-between mb-6 text-[11px] uppercase tracking-[0.25em] text-black/50">
-                <span>Шаг {step} из 2</span>
-                <span>{step === 1 ? 'Данные для доставки' : 'Оплата'}</span>
-              </div>
+            <section className="border border-black/10 p-8 bg-white lg:sticky lg:top-20">
+              
 
               <AnimatePresence mode="wait">
                 {step === 1 && (
                   <motion.div
                     key="step-address"
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.25 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
                     className="space-y-4"
                   >
-                    <h3 className="text-xs uppercase tracking-[0.25em] text-black/60 mb-2 flex items-center gap-2">
-                      <FaMapMarkerAlt className="text-[11px]" />
-                      Адрес доставки
+                    <h3 className="text-xs uppercase font-bold tracking-[0.25em] text-black/60 mb-3 flex items-center gap-2">
+                    
+                      Заполнение данных
                     </h3>
 
-                    {['name', 'phone', 'city', 'address'].map((field) => (
-                      <div key={field} className="space-y-1">
-                        <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60 mb-1 flex items-center gap-2">
-                          {field === 'name' && <FaUser className="text-[11px]" />}
-                          {field === 'phone' && (
-                            <FaPhone className="text-[11px]" />
-                          )}
-                          {(field === 'city' || field === 'address') && (
-                            <FaMapMarkerAlt className="text-[11px]" />
-                          )}
-                          {field === 'name' && 'ФИО'}
-                          {field === 'phone' && 'Телефон'}
-                          {field === 'city' && 'Город'}
-                          {field === 'address' && 'Адрес'}
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {/* ФИО */}
+                      <div className="md:col-span-2 space-y-1">
+                        <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60">
+                          <span className="inline-flex items-center gap-2">
+                            <FaUser className="text-[11px]" />
+                            ФИО  получателя
+                          </span>
                         </label>
-
-                        {field === 'city' ? (
-                          <select
-                            name={field}
-                            value={formData[field]}
-                            onChange={handleInputChange}
-                            className={getInputClass(field)}
-                          >
-                            <option value="">Выберите город</option>
-                            {CITIES.map((city) => (
-                              <option key={city} value={city}>
-                                {city}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
-                          <input
-                            name={field}
-                            value={formData[field]}
-                            onChange={handleInputChange}
-                            className={getInputClass(field)}
-                            placeholder={
-                              field === 'name'
-                                ? 'Иванов Иван Иванович'
-                                : field === 'phone'
-                                ? '+7 (999) 123-45-67'
-                                : field === 'address'
-                                ? 'Улица, дом, квартира'
-                                : ''
-                            }
-                          />
-                        )}
-
-                        <AnimatePresence>
-                          {errors[field] && (
-                            <motion.p
-                              initial={{ opacity: 0, y: -4 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -4 }}
-                              className="text-xs text-red-500 flex items-center gap-1 mt-1"
-                            >
+                        <input
+                          name="name"
+                          value={formData.name}
+                          onChange={handleInputChange}
+                          className={getInputClass('name')}
+                          placeholder="Иванов Иван Иванович"
+                        />
+                        <div className="min-h-[16px]">
+                          {errors.name && (
+                            <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
                               <FaExclamationTriangle className="text-[10px]" />
-                              {errors[field]}
-                            </motion.p>
+                              {errors.name}
+                            </p>
                           )}
-                        </AnimatePresence>
+                        </div>
                       </div>
-                    ))}
+
+                      {/* Телефон */}
+                      <div className="space-y-1">
+                        <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60">
+                          <span className="inline-flex items-center gap-2">
+                            <FaPhone className="text-[11px]" />
+                            Телефон
+                          </span>
+                        </label>
+                        <input
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          className={getInputClass('phone')}
+                          placeholder="+7 (999) 123-45-67"
+                        />
+                        <div className="min-h-[16px]">
+                          {errors.phone && (
+                            <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
+                              <FaExclamationTriangle className="text-[10px]" />
+                              {errors.phone}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Город */}
+                      <div className="space-y-1">
+                        <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60">
+                          <span className="inline-flex items-center gap-2">
+                            <FaMapMarkerAlt className="text-[11px]" />
+                            Город
+                          </span>
+                        </label>
+                        <select
+                          name="city"
+                          value={formData.city}
+                          onChange={handleInputChange}
+                          className={getInputClass('city')}
+                        >
+                          <option value="">Выберите город</option>
+                          {CITIES.map((city) => (
+                            <option key={city} value={city}>
+                              {city}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="min-h-[16px]">
+                          {errors.city && (
+                            <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
+                              <FaExclamationTriangle className="text-[10px]" />
+                              {errors.city}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Адрес */}
+                      <div className="md:col-span-2 space-y-1">
+                        <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60">
+                          <span className="inline-flex items-center gap-2">
+                            <FaMapMarkerAlt className="text-[11px]" />
+                            Адрес
+                          </span>
+                        </label>
+                        <input
+                          name="address"
+                          value={formData.address}
+                          onChange={handleInputChange}
+                          className={getInputClass('address')}
+                          placeholder="Улица, дом, квартира"
+                        />
+                        <div className="min-h-[16px]">
+                          {errors.address && (
+                            <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
+                              <FaExclamationTriangle className="text-[10px]" />
+                              {errors.address}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </motion.div>
                 )}
 
                 {step === 2 && (
                   <motion.div
                     key="step-card"
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.25 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
                     className="space-y-4"
                   >
-                    <h3 className="text-xs uppercase tracking-[0.25em] text-black/60 mb-2 flex items-center gap-2">
+                    <h3 className="text-xs uppercase tracking-[0.25em] text-black/60 mb-3 flex items-center gap-2">
                       <FaCreditCard className="text-[11px]" />
                       Данные карты
                     </h3>
 
+                    {/* Номер карты */}
                     <div className="space-y-1">
-                      <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60 mb-1">
+                      <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60">
                         Номер карты
                       </label>
                       <input
@@ -580,25 +617,21 @@ const SubscriptionDetail = () => {
                         className={getInputClass('cardNumber')}
                         placeholder="1234 5678 9012 3456"
                       />
-                      <AnimatePresence>
+                      <div className="min-h-[16px]">
                         {errors.cardNumber && (
-                          <motion.p
-                            initial={{ opacity: 0, y: -4 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -4 }}
-                            className="text-xs text-red-500 flex items-center gap-1 mt-1"
-                          >
+                          <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
                             <FaExclamationTriangle className="text-[10px]" />
                             {errors.cardNumber}
-                          </motion.p>
+                          </p>
                         )}
-                      </AnimatePresence>
+                      </div>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4">
+                      {/* Срок действия */}
                       <div className="space-y-1">
-                        <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60 mb-1">
-                          Срок действия
+                        <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60">
+                          Действие до
                         </label>
                         <input
                           name="expiry"
@@ -607,23 +640,19 @@ const SubscriptionDetail = () => {
                           className={getInputClass('expiry')}
                           placeholder="MM/YY"
                         />
-                        <AnimatePresence>
+                        <div className="min-h-[16px]">
                           {errors.expiry && (
-                            <motion.p
-                              initial={{ opacity: 0, y: -4 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -4 }}
-                              className="text-xs text-red-500 flex items-center gap-1 mt-1"
-                            >
+                            <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
                               <FaExclamationTriangle className="text-[10px]" />
                               {errors.expiry}
-                            </motion.p>
+                            </p>
                           )}
-                        </AnimatePresence>
+                        </div>
                       </div>
 
+                      {/* CVV */}
                       <div className="space-y-1">
-                        <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60 mb-1">
+                        <label className="block text-[11px] uppercase tracking-[0.25em] text-black/60">
                           CVV
                         </label>
                         <input
@@ -633,19 +662,14 @@ const SubscriptionDetail = () => {
                           className={getInputClass('cvv')}
                           placeholder="123"
                         />
-                        <AnimatePresence>
+                        <div className="min-h-[16px]">
                           {errors.cvv && (
-                            <motion.p
-                              initial={{ opacity: 0, y: -4 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -4 }}
-                              className="text-xs text-red-500 flex items-center gap-1 mt-1"
-                            >
+                            <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
                               <FaExclamationTriangle className="text-[10px]" />
                               {errors.cvv}
-                            </motion.p>
+                            </p>
                           )}
-                        </AnimatePresence>
+                        </div>
                       </div>
                     </div>
 
@@ -660,7 +684,7 @@ const SubscriptionDetail = () => {
               <button
                 onClick={handleSubscribe}
                 disabled={isButtonDisabled}
-                className={`w-full mt-8 py-4 border font-semibold text-xs tracking-[0.25em] uppercase flex items-center justify-center gap-3 transition-all ${
+                className={`w-full mt-8 h-12 border font-semibold text-xs tracking-[0.25em] uppercase flex items-center justify-center gap-3 transition-all ${
                   isButtonDisabled
                     ? 'bg-black/5 text-black/30 border-black/15 cursor-not-allowed'
                     : 'bg-black text-white border-black hover:bg-white hover:text-black'
@@ -668,7 +692,7 @@ const SubscriptionDetail = () => {
               >
                 {loading ? (
                   <>
-                    <div className="animate-spin h-4 w-4 border-b-2 border-white" />
+                    <div className="animate-spin h-4 w-4 border-b-2 border-current rounded-full" />
                     <span>Обработка...</span>
                   </>
                 ) : step === 1 ? (
@@ -683,37 +707,6 @@ const SubscriptionDetail = () => {
                   </>
                 )}
               </button>
-            </section>
-
-            {/* СВОДКА УСЛОВИЙ */}
-            <section className="border border-black/10 p-6 bg-white space-y-3 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-black/70">
-                  <FaTruck className="text-[11px]" />
-                  Доставка
-                </span>
-                <span className="text-black/60 text-[11px] uppercase tracking-[0.25em]">
-                  7–10 дней
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-black/70">
-                  <FaCalendarAlt className="text-[11px]" />
-                  Списание
-                </span>
-                <span className="text-black/60 text-[11px] uppercase tracking-[0.25em]">
-                  Ежемесячно
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-black/70">
-                  <FaShieldAlt className="text-[11px]" />
-                  Возврат
-                </span>
-                <span className="text-black/60 text-[11px] uppercase tracking-[0.25em]">
-                  14 дней
-                </span>
-              </div>
             </section>
           </motion.div>
         </div>

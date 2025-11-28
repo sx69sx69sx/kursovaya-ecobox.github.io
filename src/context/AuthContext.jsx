@@ -85,7 +85,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('users', JSON.stringify(users));
       localStorage.setItem('user', JSON.stringify({ ...user, subscription: newSubscription }));
       setUser({ ...user, subscription: newSubscription });
-      toast.success('🎉 Подписка успешно оформлена!');
       return true;
     }
     return false;

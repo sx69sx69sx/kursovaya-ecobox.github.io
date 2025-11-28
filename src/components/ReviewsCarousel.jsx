@@ -2,7 +2,7 @@ import React from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { FaStar } from 'react-icons/fa';
+import { FaStar, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const ReviewsCarousel = () => {
   const reviews = [
@@ -18,6 +18,24 @@ const ReviewsCarousel = () => {
     { name: 'Игорь Николаев', rating: 4, text: 'Хороший сервис. Больше веганских!', city: 'Краснодар' }
   ];
 
+  const ArrowButton = ({ className, style, onClick, direction }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`
+        hidden md:flex items-center justify-center
+        w-10 h-10 rounded-full border border-white
+        bg-black/60 text-white
+        hover:bg-white hover:text-black
+        transition-all duration-300
+        absolute top-1/2 -translate-y-1/2 z-10
+        ${direction === 'prev' ? '-left-4 md:-left-10' : '-right-4 md:-right-10'}
+      `}
+    >
+      {direction === 'prev' ? <FaChevronLeft /> : <FaChevronRight />}
+    </button>
+  );
+
   const settings = {
     dots: true,
     infinite: true,
@@ -28,10 +46,12 @@ const ReviewsCarousel = () => {
     autoplaySpeed: 3500,
     cssEase: "ease-out",
     pauseOnHover: false,
-    arrows: false,
+    arrows: true,
+    nextArrow: <ArrowButton direction="next" />,
+    prevArrow: <ArrowButton direction="prev" />,
     responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 2 }},
-      { breakpoint: 768, settings: { slidesToShow: 1 }}
+      { breakpoint: 1024, settings: { slidesToShow: 2 } },
+      { breakpoint: 768, settings: { slidesToShow: 1 } }
     ],
     appendDots: dots => (
       <div style={{ marginTop: "40px" }}>
@@ -39,31 +59,32 @@ const ReviewsCarousel = () => {
       </div>
     ),
     customPaging: () => (
-      <div className="w-[10px] h-[6px] bg-black opacity-40 hover:opacity-100 transition duration-300 mt-10"></div>
+      <div className="w-[10px] h-[6px] bg-white/40 hover:bg-white transition duration-300 mt-10"></div>
     ),
   };
 
   return (
-    <section className="py-24 bg-white border-t border-black/10">
+    <section className="py-24 bg-black text-white border-t border-white/10">
       <div className="max-w-7xl mx-auto px-6">
-
-
         <Slider {...settings}>
           {reviews.map((review, index) => (
             <div key={index} className="px-4 group">
-              <div className="
-                border border-black/15 p-8 h-full
-                transition-all duration-500 
-                group-hover:bg-black group-hover:text-white
-              ">
+              <div
+                className="
+                  border border-white/20 p-8 h-full
+                  transition-all duration-500 
+                  bg-black
+                  group-hover:bg-white group-hover:text-black
+                "
+              >
                 <div className="flex gap-[2px] mb-5">
                   {[...Array(5)].map((_, i) => (
                     <FaStar
                       key={i}
                       className={
                         i < review.rating
-                          ? "text-black group-hover:text-white transition"
-                          : "text-black/20 group-hover:text-white/40 transition"
+                          ? "text-white group-hover:text-black transition"
+                          : "text-white/25 group-hover:text-black/25 transition"
                       }
                     />
                   ))}
@@ -73,7 +94,7 @@ const ReviewsCarousel = () => {
                   “{review.text}”
                 </p>
 
-                <div className="border-t border-black/15 group-hover:border-white/30 pt-4">
+                <div className="border-top border-white/20 pt-4 border-t">
                   <h4 className="font-medium text-[16px]">{review.name}</h4>
                   <p className="text-sm opacity-70">{review.city}</p>
                 </div>

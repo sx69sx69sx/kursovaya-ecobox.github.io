@@ -41,7 +41,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 bg-black text-white border-b border-white/20">
 
       {/* TOP STRIP */}
-      <div className="hidden md:block border-b border-white/10 bg-black">
+      <div className="hidden md:block border-b border-white/10 bg-white/15">
         <div className="max-w-7xl mx-auto px-10 h-9 flex items-center justify-between text-[11px] uppercase tracking-[0.18em]">
           <span className="text-white/50">
             Ежемесячные экобоксы • Доставка по России

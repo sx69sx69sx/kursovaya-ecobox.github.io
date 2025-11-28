@@ -48,7 +48,6 @@ const Register = () => {
 
     const ok = register(form.email.trim(), form.password, form.name.trim());
     if (ok) {
-      toast.success("Вы успешно зарегистрировались");
       navigate("/profile");
     } else {
       toast.error("Не удалось зарегистрироваться");

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -231,56 +231,112 @@ const FAQ = () => {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-12">
-        {/* HERO */}
-        <section className="border-b border-black/10 pb-10 mb-10 text-center">
-          <p className="text-[11px] uppercase tracking-[0.3em] text-black/50 mb-3">
-            Помощь и поддержка
-          </p>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight uppercase mb-3">
-            Ответы на частые вопросы
-          </h1>
-          <p className="text-sm md:text-base text-black/60 max-w-2xl mx-auto">
-            Здесь собраны основные вопросы о подписке, доставке, оплате и
-            товарах. Введите ключевое слово в поиск или раскройте нужную
-            категорию.
-          </p>
-        </section>
+      <main className="max-w-5xl mx-auto px-6 pb-18">
+        {/* HERO — ЧЁРНЫЙ БЛОК С ПОИСКОМ */}
+        <section className="mt-10 mb-12">
+          <motion.div
+            initial={{ y: 18, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="bg-black text-white border border-black"
+          >
+            <div className="grid md:grid-cols-[2.4fr,1.6fr]">
+              {/* ЛЕВАЯ ЧАСТЬ */}
+              <div className="px-8 lg:px-10 py-8 lg:py-10 border-b md:border-b-0 md:border-r border-white/10">
+                <p className="text-[11px] uppercase tracking-[0.3em] text-white/55 mb-3">
+                  Помощь и поддержка
+                </p>
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight uppercase mb-4">
+                  Ответы на частые вопросы
+                </h1>
+                <p className="text-[13px] md:text-sm text-white/75 mb-5 max-w-md">
+                  Быстрый способ найти ответ, не обращаясь в поддержку:
+                  поищите по ключевому слову или раскройте нужную категорию.
+                </p>
 
-        {/* ПОИСК */}
-        <section className="mb-10">
-          <div className="relative">
-            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-black/40 text-sm" />
-            <input
-              type="text"
-              placeholder="Поиск по вопросам..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full border border-black/20 pl-9 pr-3 py-3 text-sm focus:outline-none focus:border-black"
-            />
-          </div>
+                {/* ПОИСК ВНУТРИ HERO */}
+                <div className="relative">
+                  <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
+                  <input
+                    type="text"
+                    placeholder="Поиск по вопросам..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full border border-white/30 bg-transparent pl-9 pr-3 py-3 text-sm focus:outline-none focus:border-white placeholder:text-white/40"
+                  />
+                </div>
+              </div>
+
+              {/* ПРАВАЯ ЧАСТЬ — НЕБОЛЬШАЯ СТАТИСТИКА */}
+              <div className="px-8 lg:px-10 py-8 lg:py-10 bg-black/90 text-xs flex flex-col justify-between">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between border-b border-white/15 pb-3">
+                    <span className="uppercase tracking-[0.25em] text-white/60">
+                      Вопросов в базе
+                    </span>
+                    <span className="text-xl font-semibold">
+                      {
+                        faqData.reduce(
+                          (sum, c) => sum + c.questions.length,
+                          0
+                        )
+                      }
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between border-b border-white/15 pb-3">
+                    <span className="uppercase tracking-[0.25em] text-white/60">
+                      Решаем с первого раза
+                    </span>
+                    <span className="text-xl font-semibold">98%</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="uppercase tracking-[0.25em] text-white/60">
+                      Среднее время ответа
+                    </span>
+                    <span className="text-xl font-semibold">24 ч</span>
+                  </div>
+                </div>
+                <p className="mt-5 text-[11px] text-white/55 flex items-center gap-2">
+                  <span className="inline-block w-1.5 h-1.5 bg-white rounded-full" />
+                  Если не нашли ответ — напишите нам, мы поможем.
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </section>
 
         {/* КАТЕГОРИИ + ВОПРОСЫ */}
         <section className="mb-16">
+          {/* Заголовок блока */}
+          <div className="flex items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <span className="text-[10px] font-semibold tracking-[0.3em] uppercase text-black/60">
+                Разделы FAQ
+              </span>
+              <span className="h-px flex-1 bg-black" />
+            </div>
+            <p className="hidden md:block text-[11px] text-black/50">
+              Нажмите на категорию, чтобы свернуть или развернуть ответы.
+            </p>
+          </div>
+
           {filteredFaq.map((category, catIndex) => (
             <motion.div
               key={category.category}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: catIndex * 0.03 }}
-              className="mb-6 border border-black/10"
+              className="mb-5 border border-black/12"
             >
               {/* Заголовок категории */}
               <button
                 type="button"
                 onClick={() => toggleCategory(category.category)}
-                className="w-full px-4 py-4 flex items-center justify-between text-left"
+                className="w-full px-5 py-4 flex items-center justify-between text-left bg-black/2"
               >
                 <div className="flex items-center gap-3">
                   <FaQuestionCircle className="text-sm" />
                   <div>
-                    <p className="text-xs uppercase tracking-[0.25em]">
+                    <p className="text-[11px] uppercase tracking-[0.25em]">
                       {getCategoryTitle(category.category)}
                     </p>
                     <p className="text-[11px] text-black/50">
@@ -297,16 +353,19 @@ const FAQ = () => {
 
               {/* Список вопросов */}
               {openCategories[category.category] && (
-                <div className="border-t border-black/5">
+                <div className="border-t border-black/7">
                   {category.questions.map((question, qIndex) => {
                     const indexKey = `${catIndex}-${qIndex}`;
                     const isActive = activeIndex === indexKey;
                     return (
-                      <div key={indexKey} className="border-t border-black/5">
+                      <div
+                        key={indexKey}
+                        className="border-t border-black/7 bg-white"
+                      >
                         <button
                           type="button"
                           onClick={() => toggleQuestion(indexKey)}
-                          className="w-full px-4 py-3 flex items-center justify-between text-left text-sm"
+                          className="w-full px-5 py-3.5 flex items-center justify-between text-left text-sm hover:bg-black/3 transition-colors"
                         >
                           <span className="pr-4">{question.q}</span>
                           {isActive ? (
@@ -319,7 +378,7 @@ const FAQ = () => {
                           <motion.div
                             initial={{ opacity: 0, y: -4 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="px-4 pb-4 text-[13px] text-black/75"
+                            className="px-5 pb-4 text-[13px] text-black/75 leading-relaxed"
                           >
                             {question.a}
                           </motion.div>
@@ -340,7 +399,7 @@ const FAQ = () => {
         </section>
 
         {/* CTA + КОНТАКТЫ */}
-        <section className="border border-black/10 px-6 py-8 mb-10 text-center">
+        <section className="border border-black/12 px-6 py-8 mb-10 text-center">
           <p className="text-[11px] uppercase tracking-[0.3em] text-black/60 mb-3">
             Не нашли ответ
           </p>
@@ -357,7 +416,7 @@ const FAQ = () => {
             </Link>
             <a
               href="tel:+74951234567"
-              className="inline-flex items-center justify-center px-8 py-3 border border-black text-xs font-semibold uppercase tracking-[0.25em] hover:bg-black hover:text-white transition-colors"
+              className="inline-flex items-center justify-center px-8 py-3 border border-black text-xs font-semibold uppercase tracking-[0.25em] hover:bg黑 hover:text-white transition-colors"
             >
               <FaPhone className="text-[11px] mr-2" />
               +7 (495) 123-45-67
@@ -366,21 +425,21 @@ const FAQ = () => {
         </section>
 
         {/* НЕБОЛЬШАЯ СТАТИСТИКА */}
-        <section className="mb-4">
+        <section className="mb-6">
           <div className="grid md:grid-cols-3 gap-4 text-center text-sm">
-            <div className="border border-black/10 px-4 py-4">
+            <div className="border border-black/12 px-4 py-4">
               <p className="text-xl font-semibold mb-1">98%</p>
               <p className="text-black/70 text-[13px]">
                 запросов решаем с первого обращения
               </p>
             </div>
-            <div className="border border-black/10 px-4 py-4">
+            <div className="border border-black/12 px-4 py-4">
               <p className="text-xl font-semibold mb-1">24 ч</p>
               <p className="text-black/70 text-[13px]">
                 среднее время полного ответа
               </p>
             </div>
-            <div className="border border-black/10 px-4 py-4">
+            <div className="border border-black/12 px-4 py-4">
               <p className="text-xl font-semibold mb-1">5000+</p>
               <p className="text-black/70 text-[13px]">
                 клиентов уже пользуются поддержкой

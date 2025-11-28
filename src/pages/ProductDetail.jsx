@@ -498,26 +498,86 @@ const ProductDetail = () => {
     toast.success(`${product.title} добавлено в коробку`);
   };
 
-  const reviews = [
-    {
-      author: 'Анна С.',
-      rating: 5,
-      text: 'Отличный экотовар, беру уже не первый раз.',
-      date: '15.10.2025'
-    },
-    {
-      author: 'Дмитрий К.',
-      rating: 5,
-      text: 'Удобно в формате подписки — не нужно вспоминать о заказе.',
-      date: '12.10.2025'
-    },
-    {
-      author: 'Елена П.',
-      rating: 4,
-      text: 'Качественно, упаковка без лишнего пластика.',
-      date: '10.10.2025'
-    }
-  ];
+ const reviews = [ 
+  {
+    author: 'Анна С.',
+    rating: 5,
+    text: 'Отличный экотовар, беру уже не первый раз.',
+    date: '15.10.2025'
+  },
+  {
+    author: 'Дмитрий К.',
+    rating: 5,
+    text: 'Удобно в формате подписки — не нужно вспоминать о заказе.',
+    date: '12.10.2025'
+  },
+  {
+    author: 'Елена П.',
+    rating: 4,
+    text: 'Качественно, упаковка без лишнего пластика.',
+    date: '10.10.2025'
+  },
+  {
+    author: 'Мария Л.',
+    rating: 5,
+    text: 'Очень понравился подбор в коробке, всё нужное и без лишнего.',
+    date: '08.10.2025'
+  },
+  {
+    author: 'Игорь В.',
+    rating: 5,
+    text: 'Доставка быстрая, товары свежие, запахи натуральные.',
+    date: '05.10.2025'
+  },
+  {
+    author: 'Софья М.',
+    rating: 4,
+    text: 'В целом довольна, один товар показался менее удобным, но качество на высоте.',
+    date: '02.10.2025'
+  },
+  {
+    author: 'Павел Р.',
+    rating: 5,
+    text: 'Отличное соотношение цены и качества, всё продумано до мелочей.',
+    date: '29.09.2025'
+  },
+  {
+    author: 'Ольга К.',
+    rating: 5,
+    text: 'Нравится, что можно отказаться от лишней упаковки и всё реально эко.',
+    date: '26.09.2025'
+  },
+  {
+    author: 'Виктория З.',
+    rating: 5,
+    text: 'Красиво упаковано, приятно дарить и получать. Заказала ещё и подруге.',
+    date: '22.09.2025'
+  },
+  {
+    author: 'Алексей Н.',
+    rating: 4,
+    text: 'Пара позиций не совсем мои, но в остальном очень доволен сервисом.',
+    date: '19.09.2025'
+  },
+  {
+    author: 'Ксения Т.',
+    rating: 5,
+    text: 'Подписка — спасение, теперь дома всегда есть эко-средства для быта.',
+    date: '15.09.2025'
+  },
+  {
+    author: 'Роман Г.',
+    rating: 5,
+    text: 'Поддерживаю идею осознанного потребления, ваш сервис — хороший шаг в эту сторону.',
+    date: '11.09.2025'
+  },
+  {
+    author: 'Наталья Ч.',
+    rating: 5,
+    text: 'Всё аккуратно, удобно и понятно. Осталась только приятное впечатление.',
+    date: '08.09.2025'
+  }
+];
 
   return (
     <motion.div
@@ -546,11 +606,11 @@ const ProductDetail = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* ФОТО */}
           <section className="space-y-6">
-            <div className="border border-black/10 h-[380px] flex items-center justify-center">
+            <div className="border border-black/10 h-[620px] flex items-center justify-center">
               <img
                 src={product.image}
                 alt={product.title}
-                className="max-h-[340px] w-full object-contain"
+                className="max-h-[500px] w-full object-contain"
               />
             </div>
           </section>
@@ -658,11 +718,6 @@ const ProductDetail = () => {
                 Добавить в коробку
               </button>
             </div>
-
-            <button className="w-full border border-black text-xs font-semibold tracking-[0.25em] uppercase py-3 flex items-center justify-center gap-2 hover:bg-black hover:text-white transition-colors">
-              <FaHeart className="text-[12px]" />
-              В избранное
-            </button>
 
             <div className="border border-black/10 px-4 py-4 text-xs text-black/70 space-y-2">
               <div className="flex items-center justify-between">

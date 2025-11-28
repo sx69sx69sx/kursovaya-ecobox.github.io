@@ -36,13 +36,25 @@ const PRODUCTS = [
 
 const CATEGORIES = ['Все', 'Косметика', 'Гигиена', 'Аксессуары', 'Быт'];
 
+const SectionLabel = ({ index, children }) => (
+  <div className="flex items-center gap-3 mb-4">
+    <span className="text-[10px] font-semibold tracking-[0.3em] uppercase text-black/60">
+      {index.toString().padStart(2, '0')}
+    </span>
+    <span className="flex-1 h-px bg-black" />
+    <h2 className="text-xs md:text-sm font-semibold uppercase tracking-[0.35em]">
+      {children}
+    </h2>
+  </div>
+);
+
 const Products = () => {
   const { dispatch } = useCart();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('Все');
   const [sort, setSort] = useState('popular');
 
-  const filteredProducts = PRODUCTS.filter(product => {
+  const filteredProducts = PRODUCTS.filter((product) => {
     const matchesSearch = product.title.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = category === 'Все' || product.category === category;
     return matchesSearch && matchesCategory;
@@ -50,142 +62,248 @@ const Products = () => {
     if (sort === 'price-low') return a.price - b.price;
     if (sort === 'price-high') return b.price - a.price;
     if (sort === 'rating') return b.rating - a.rating;
-    return b.id - a.id;
+    return b.id - a.id; // "Популярные" – новые выше
   });
 
   const addToBox = (product) => {
     dispatch({
       type: 'ADD_ITEM',
-      payload: { id: product.id, title: product.title, price: product.price, image: product.image, quantity: 1 }
+      payload: {
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        image: product.image,
+        quantity: 1
+      }
     });
     toast.success(`${product.title} добавлено в коробку`);
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-white text-black">
-
-      {/* HEADER */}
-      <div className="border-b border-black/10">
-        <div className="max-w-7xl mx-auto px-6 py-10">
-          <Link to="/" className="flex items-center mb-6 text-black hover:opacity-50 transition">
-            <FaArrowLeft className="mr-2" /> На главную
-          </Link>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-medium tracking-tight uppercase">Каталог</h1>
-              <p className="text-black/50 mt-1">Выберите товары для подписки</p>
-            </div>
-
-            
-          </div>
-        </div>
-      </div>
-
-      {/* FILTERS */}
-      <div className="border-b border-black/10">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className="grid md:grid-cols-3 gap-6">
-
-            {/* SEARCH */}
-            <div className="relative">
-              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-black/30" />
-              <input
-                type="text"
-                placeholder="Поиск"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-black/20 focus:border-black outline-none"
-              />
-            </div>
-
-            {/* CATEGORIES */}
-            <div className="md:col-span-2 flex  gap-2">
-              {CATEGORIES.map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setCategory(cat)}
-                  className={`px-4 py-2 border text-sm tracking-wide transition ${
-                    category === cat ? 'bg-black text-white' : 'border-black/20 hover:border-black'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-             {/* SORT */}
-          
-        </div>
-        <div className="flex  mt-4">
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className="px-4 py-2 border border-black/20 focus:border-black outline-none"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-white text-black mb-10"
+    >
+      {/* HEADER / КРОШКИ */}
+      <header className="border-b border-black/10">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3 text-[11px]">
+            <Link
+              to="/"
+              className="uppercase tracking-[0.25em] text-black/60 hover:text-black transition-colors flex items-center"
             >
-              <option value="popular">Популярные</option>
-              <option value="rating">По рейтингу</option>
-              <option value="price-low">Цена: вверх</option>
-              <option value="price-high">Цена: вниз</option>
-            </select>
+              <span className="mr-2 text-[9px]">←</span>
+              Главная
+            </Link>
+            <span className="text-black/30">/</span>
+            <span className="uppercase tracking-[0.25em] text-black">
+              Каталог
+            </span>
           </div>
-      </div>
+          <div className="hidden md:block text-[11px] uppercase tracking-[0.32em] text-black/50">
+            Экологичные товары по подписке
           </div>
+        </div>
+      </header>
 
-         
+      <main className="max-w-7xl mx-auto px-6 pb-18">
+        {/* HERO — ЧЁРНАЯ ПОЛОСА */}
+        <section className="mt-10 mb-14">
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="bg-black text-white border border-black overflow-hidden"
+          >
+            <div className="grid md:grid-cols-[3fr,2fr]">
+              {/* ЛЕВАЯ ЧАСТЬ */}
+              <div className="px-8 lg:px-10 py-9 lg:py-11 border-b md:border-b-0 md:border-r border-white/10">
+                <p className="text-[11px] uppercase tracking-[0.3em] text-white/60 mb-3">
+                  Каталог
+                </p>
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight uppercase mb-4">
+                  Соберите свою эко-коробку
+                </h1>
+                <p className="text-sm md:text-[15px] text-white/75 max-w-xl">
+                  Косметика, гигиена, аксессуары и товары для дома. 
+                  Всё, что вы выбираете здесь, можно добавить в подписку или разовый заказ.
+                </p>
+              </div>
 
-      {/* PRODUCTS GRID */}
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
+              {/* ПРАВАЯ ЧАСТЬ — ЦИФРЫ */}
+              <div className="px-8 lg:px-10 py-8 lg:py-10 bg-black/90 text-xs">
+                <div className="flex items-center justify-between border-b border-white/12 pb-4 mb-4">
+                  <span className="uppercase tracking-[0.25em] text-white/60">
+                    Товаров
+                  </span>
+                  <span className="text-2xl font-semibold">{PRODUCTS.length}</span>
+                </div>
+                <div className="flex items-center justify-between border-b border-white/12 pb-4 mb-4">
+                  <span className="uppercase tracking-[0.25em] text-white/60">
+                    Средний рейтинг
+                  </span>
+                  <span className="text-2xl font-semibold">4.8</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="uppercase tracking-[0.25em] text-white/60">
+                    Категории
+                  </span>
+                  <span className="text-2xl font-semibold">
+                    {CATEGORIES.length - 1}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </section>
 
-          {filteredProducts.map((product, i) => (
-            <Link to={`/product/${product.id}`} key={product.id}>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03 }}
-                className="border border-black/15 p-6 hover:bg-black hover:text-white transition group cursor-pointer"
-              >
-                <div className="w-full h-48 bg-black/5 mb-4 overflow-hidden">
-                  <img
-                    src={product.image}
-                    alt={product.title}
-                    className="w-full h-full object-cover group-hover:opacity-80 transition"
+        {/* ФИЛЬТРЫ */}
+        <section className="mb-12 space-y-6">
+          <SectionLabel index={1}>Фильтры</SectionLabel>
+
+          <div className="border border-black/12 px-5 py-5 md:px-6 md:py-6">
+            <div className="grid md:grid-cols-[2fr,3fr,1.5fr] gap-4 md:gap-6 items-center">
+              {/* SEARCH */}
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.25em] text-black/60 mb-2">
+                  Поиск
+                </p>
+                <div className="relative">
+                  <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-black/30" />
+                  <input
+                    type="text"
+                    placeholder="Название товара"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2.5 border border-black/20 focus:border-black outline-none text-sm"
                   />
                 </div>
+              </div>
 
-                <h3 className="font-medium uppercase tracking-wide mb-2">{product.title}</h3>
-
-                <div className="flex items-center gap-1 mb-2">
-                  {[...Array(5)].map((_, j) => (
-                    <FaStar
-                      key={j}
-                      className={j < Math.floor(product.rating)
-                        ? 'text-black group-hover:text-white'
-                        : 'text-black/20 group-hover:text-white/30'}
-                    />
+              {/* CATEGORIES */}
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.25em] text-black/60 mb-2">
+                  Категории
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {CATEGORIES.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setCategory(cat)}
+                      className={[
+                        'px-3 py-1.5 border text-[11px] tracking-[0.18em] uppercase transition',
+                        category === cat
+                          ? 'bg-black text-white border-black'
+                          : 'border-black/25 hover:border-black hover:bg-black/5'
+                      ].join(' ')}
+                    >
+                      {cat}
+                    </button>
                   ))}
-                  <span className="text-sm opacity-70">{product.rating}</span>
                 </div>
+              </div>
 
-                <div className="text-lg font-medium mb-4">{product.price} ₽</div>
-
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    addToBox(product);
-                  }}
-                  className="w-full border border-black py-2 uppercase tracking-wide hover:bg-white hover:text-black transition"
+              {/* SORT */}
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.25em] text-black/60 mb-2">
+                  Сортировка
+                </p>
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                  className="w-full border border-black/20 px-3 py-2.5 text-sm focus:outline-none focus:border-black bg-white"
                 >
-                  Добавить
-                </button>
-              </motion.div>
-            </Link>
-          ))}
+                  <option value="popular">Популярные</option>
+                  <option value="rating">По рейтингу</option>
+                  <option value="price-low">Цена: вверх</option>
+                  <option value="price-high">Цена: вниз</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
 
-        </div>
-      </div>
+        {/* СЕКЦИЯ ТОВАРОВ */}
+        <section className="mb-18 space-y-6">
+          <SectionLabel index={2}>Все товары</SectionLabel>
 
+          <div className="flex justify-between items-center text-[11px] text-black/60 mb-2">
+            <span>
+              Найдено: <span className="font-semibold text-black">{filteredProducts.length}</span>
+            </span>
+            <span className="hidden md:inline">
+              Клик по карточке — детали товара, кнопка «Добавить» — сразу в коробку
+            </span>
+          </div>
+
+          {/* GRID */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+            {filteredProducts.map((product, i) => (
+              <Link to={`/product/${product.id}`} key={product.id}>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.02 }}
+                  className="border border-black/15 p-5 hover:bg-black hover:text-white transition group cursor-pointer h-full flex flex-col"
+                >
+                  {/* КАРТИНКА */}
+                  <div className="w-full h-48 bg-black/5 mb-4 overflow-hidden">
+                    <img
+                      src={product.image}
+                      alt={product.title}
+                      className="w-full h-full object-cover group-hover:opacity-80 transition"
+                    />
+                  </div>
+
+                  {/* КАТЕГОРИЯ */}
+                  <div className="flex items-center justify-between mb-2 text-[11px] uppercase tracking-[0.18em]">
+                    <span className="opacity-70">{product.category}</span>
+                    <span className="opacity-40 group-hover:opacity-60">
+                      ID {product.id.toString().padStart(2, '0')}
+                    </span>
+                  </div>
+
+                  {/* НАЗВАНИЕ */}
+                  <h3 className="font-medium uppercase tracking-[0.12em] mb-2 text-sm">
+                    {product.title}
+                  </h3>
+
+                  {/* РЕЙТИНГ */}
+                  <div className="flex items-center gap-1 mb-3 text-xs">
+                    {[...Array(5)].map((_, j) => (
+                      <FaStar
+                        key={j}
+                        className={
+                          j < Math.round(product.rating)
+                            ? 'text-black group-hover:text-white'
+                            : 'text-black/20 group-hover:text-white/30'
+                        }
+                      />
+                    ))}
+                    <span className="ml-1 opacity-70">{product.rating.toFixed(1)}</span>
+                  </div>
+
+                  {/* ЦЕНА */}
+                  <div className="text-lg font-semibold mb-4">{product.price} ₽</div>
+
+                  {/* КНОПКА */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      addToBox(product);
+                    }}
+                    className="mt-auto w-full border border-black group-hover:border-white py-2.5 text-[11px] uppercase tracking-[0.2em] hover:bg-white hover:text-black transition"
+                  >
+                    Добавить в коробку
+                  </button>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      </main>
     </motion.div>
   );
 };
