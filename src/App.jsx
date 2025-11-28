@@ -47,7 +47,7 @@ function App() {
     <AuthProvider>
       <CartProvider>
         {/* basename важен для GitHub Pages */}
-        <Router basename="/kursovaya-ecobox.github.io">
+        <Router basename="/">
           <ScrollToTop />
 
           <div className="App">
