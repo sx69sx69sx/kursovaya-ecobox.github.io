@@ -387,15 +387,7 @@ const SubscriptionDetail = () => {
                       className="flex items-center justify-between px-4 py-3 border border-black/10 bg-black/5"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 border border-black/20 bg-white overflow-hidden">
-                          {item.image && (
-                            <img
-                              src={item.image}
-                              alt={item.title}
-                              className="w-full h-full object-cover"
-                            />
-                          )}
-                        </div>
+                        
                         <div>
                           <h4 className="text-sm font-medium uppercase tracking-wide">
                             {item.title}
