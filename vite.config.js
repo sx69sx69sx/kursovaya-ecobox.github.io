@@ -2,5 +2,6 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: '/kursovaya-ecobox.github.io/',
+  plugins: [react()],
+  base: '/kursovaya-ecobox.github.io',
 });
