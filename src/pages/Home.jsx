@@ -5,14 +5,14 @@ import { FaStar, FaArrowRight } from 'react-icons/fa';
 import ReviewsCarousel from '../components/ReviewsCarousel';
 
 const POPULAR_PRODUCTS = [
-  { id: 1, title: 'Эко-зубная паста', price: 350, image: '/images/33333.jpg', rating: 4.8 },
-  { id: 2, title: 'Бамбуковая щетка', price: 250, image: '/images/bambi.jpg', rating: 4.9 },
-  { id: 3, title: 'Натуральное мыло', price: 280, image: '/images/soap.jpg', rating: 4.7 },
-  { id: 4, title: 'Многоразовая бутылка', price: 890, image: '/images/2222.avif', rating: 4.9 },
-  { id: 5, title: 'Бамбуковые палочки', price: 180, image: '/images/4343.png', rating: 4.8 },
-  { id: 6, title: 'Эко-шампунь', price: 420, image: '/images/shampoo.jpg', rating: 4.6 },
-  { id: 7, title: 'Хлопковая сумка', price: 450, image: '/images/5555.jpg', rating: 4.9 },
-  { id: 8, title: 'Натуральный дезодорант', price: 320, image: '/images/6666.jpg', rating: 4.7 },
+  { id: 1, title: 'Эко-зубная паста', price: 350, image: 'src/assets/images/33333.jpg', rating: 4.8 },
+  { id: 2, title: 'Бамбуковая щетка', price: 250, image: 'src/assets//images/bambi.jpg', rating: 4.9 },
+  { id: 3, title: 'Натуральное мыло', price: 280, image: 'src/assets//images/soap.jpg', rating: 4.7 },
+  { id: 4, title: 'Многоразовая бутылка', price: 890, image: 'src/assets//images/2222.avif', rating: 4.9 },
+  { id: 5, title: 'Бамбуковые палочки', price: 180, image: 'src/assets//images/4343.png', rating: 4.8 },
+  { id: 6, title: 'Эко-шампунь', price: 420, image: 'src/assets//images/shampoo.jpg', rating: 4.6 },
+  { id: 7, title: 'Хлопковая сумка', price: 450, image: 'src/assets//images/5555.jpg', rating: 4.9 },
+  { id: 8, title: 'Натуральный дезодорант', price: 320, image: 'src/assets/images/6666.jpg', rating: 4.7 },
 ];
 
 const Home = () => {
@@ -76,7 +76,7 @@ const Home = () => {
             className="hidden lg:block"
           >
             <img
-              src="/images/promik.jpg"
+              src="src/assets/images/promik.jpg"
               className="w-full h-[550px] object-cover"
               alt="EcoBox Promo"
             />

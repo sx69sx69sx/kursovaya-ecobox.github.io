@@ -5,24 +5,24 @@ import { FaLeaf, FaUsers, FaTruck, FaAward, FaGlobe } from "react-icons/fa";
 
 // ❗ ВСТАВЬ СВОИ КАРТИНКИ
 // Если картинки в public/images — оставь "/images/название"
-const HERO_IMAGE = "/images/shop2.jpg";
-const STORY_IMAGE = "/images/shop.jpg";
+const HERO_IMAGE = "src/assets/images/shop2.jpg";
+const STORY_IMAGE = "src/assets/images/shop.jpg";
 
 // ❗ Вставь рабочие пути к картинкам
 const team = [
-  { name: "Анна Иванова", role: "CEO специалист", photo: "/images/6666.png" },
-  { name: "Михаил Петров", role: "Эко-эксперт", photo: "/images/9999.png" },
-  { name: "Елена Сидорова", role: "Логистика", photo: "/images/7777.png" },
-  { name: "Дмитрий Козлов", role: "Маркетинг", photo: "/images/8888.png" }
+  { name: "Анна Иванова", role: "CEO специалист", photo: "src/assets/images/6666.png" },
+  { name: "Михаил Петров", role: "Эко-эксперт", photo: "src/assets/images/9999.png" },
+  { name: "Елена Сидорова", role: "Логистика", photo: "src/assets/images/7777.png" },
+  { name: "Дмитрий Козлов", role: "Маркетинг", photo: "src/assets/images/8888.png" }
 ];
 
 // ❗ Партнёры
 const partners = [
-  "/images/partner22.png",
-  "/images/partner1.jpg",
-  "/images/partner2.png",
-  "/images/1.jpg",
-  "/images/333.png"
+  "src/assets/images/partner22.png",
+  "src/assets/images/partner1.jpg",
+  "src/assets/images/partner2.png",
+  "src/assets/images/1.jpg",
+  "src/assets/images/333.png"
 ];
 
 const About = () => {

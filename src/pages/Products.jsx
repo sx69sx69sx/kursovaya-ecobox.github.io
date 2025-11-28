@@ -4,34 +4,33 @@ import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 import { FaArrowLeft, FaSearch, FaStar } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
-
 const PRODUCTS = [
-  { id: 1, title: 'Эко-зубная паста', price: 350, image: '/images/33333.jpg', category: 'Косметика', rating: 4.8 },
-  { id: 2, title: 'Бамбуковая щетка', price: 250, image: '/images/bambi.jpg', category: 'Гигиена', rating: 4.9 },
-  { id: 3, title: 'Натуральное мыло', price: 280, image: '/images/soap.jpg', category: 'Косметика', rating: 4.7 },
-  { id: 4, title: 'Многоразовая бутылка', price: 890, image: '/images/2222.avif', category: 'Аксессуары', rating: 4.9 },
-  { id: 5, title: 'Бамбуковые палочки', price: 180, image: '/images/4343.png', category: 'Быт', rating: 4.8 },
-  { id: 6, title: 'Эко-шампунь', price: 420, image: '/images/shampoo.jpg', category: 'Косметика', rating: 4.6 },
-  { id: 7, title: 'Хлопковая сумка', price: 450, image: '/images/5555.jpg', category: 'Аксессуары', rating: 4.9 },
-  { id: 8, title: 'Натуральный дезодорант', price: 320, image: '/images/6666.jpg', category: 'Косметика', rating: 4.7 },
-  { id: 9, title: 'Металлическая соломинка', price: 150, image: '/images/solo.webp', category: 'Аксессуары', rating: 4.8 },
-  { id: 10, title: 'Эко-губка', price: 220, image: '/images/gubka.jpg', category: 'Быт', rating: 4.9 },
-  { id: 11, title: 'Органический крем', price: 580, image: '/images/kr.jpeg', category: 'Косметика', rating: 4.8 },
-  { id: 12, title: 'Бамбуковая расческа', price: 310, image: '/images/ras.jpg', category: 'Гигиена', rating: 4.7 },
-  { id: 13, title: 'Пакеты', price: 190, image: '/images/bio_bags.jpg', category: 'Быт', rating: 4.8 },
-  { id: 14, title: 'Термокружка', price: 990, image: '/images/thermo.jpg', category: 'Аксессуары', rating: 4.9 },
-  { id: 15, title: 'Эко-гель для душа', price: 380, image: '/images/gel.webp', category: 'Косметика', rating: 4.8 },
-  { id: 16, title: 'Щётка для посуды', price: 260, image: '/images/dish_brush.webp', category: 'Быт', rating: 4.7 },
-  { id: 17, title: 'Твёрдый кондиционер', price: 310, image: '/images/cond.jpg', category: 'Косметика', rating: 4.8 },
-  { id: 18, title: 'Контейнер для еды', price: 650, image: '/images/foodbox.jpg', category: 'Быт', rating: 4.9 },
-  { id: 19, title: 'Салфетки из бамбука', price: 210, image: '/images/napkins.webp', category: 'Быт', rating: 4.5 },
-  { id: 20, title: 'Твёрдый шампунь', price: 390, image: '/images/hardshampoo.jpg', category: 'Косметика', rating: 4.9 },
-  { id: 21, title: 'Освежитель', price: 750, image: '/images/fresh.webp', category: 'Быт', rating: 4.6 },
-  { id: 22, title: 'Кокосовое мыло', price: 240, image: '/images/cocos.png', category: 'Косметика', rating: 4.8 },
-  { id: 23, title: 'Щётка для одежды', price: 330, image: '/images/clothbrush.jpg', category: 'Быт', rating: 4.5 },
-  { id: 24, title: 'Диски для лица', price: 280, image: '/images/pads.webp', category: 'Гигиена', rating: 4.7 },
-  { id: 25, title: 'Эко-порошок', price: 460, image: '/images/powder.jpeg', category: 'Быт', rating: 4.6 },
-  { id: 26, title: 'Аромасаше', price: 150, image: '/images/sachet.jpg', category: 'Быт', rating: 4.9 },
+  { id: 1, title: 'Эко-зубная паста', price: 350, image: 'src/assets/images/33333.jpg', category: 'Косметика', rating: 4.8 },
+  { id: 2, title: 'Бамбуковая щетка', price: 250, image: 'src/assets/images/bambi.jpg', category: 'Гигиена', rating: 4.9 },
+  { id: 3, title: 'Натуральное мыло', price: 280, image: 'src/assets/images/soap.jpg', category: 'Косметика', rating: 4.7 },
+  { id: 4, title: 'Многоразовая бутылка', price: 890, image: 'src/assets/images/2222.avif', category: 'Аксессуары', rating: 4.9 },
+  { id: 5, title: 'Бамбуковые палочки', price: 180, image: 'src/assets/images/4343.png', category: 'Быт', rating: 4.8 },
+  { id: 6, title: 'Эко-шампунь', price: 420, image: 'src/assets/images/shampoo.jpg', category: 'Косметика', rating: 4.6 },
+  { id: 7, title: 'Хлопковая сумка', price: 450, image: 'src/assets/images/5555.jpg', category: 'Аксессуары', rating: 4.9 },
+  { id: 8, title: 'Натуральный дезодорант', price: 320, image: 'src/assets/images/6666.jpg', category: 'Косметика', rating: 4.7 },
+  { id: 9, title: 'Металлическая соломинка', price: 150, image: 'src/assets/images/solo.webp', category: 'Аксессуары', rating: 4.8 },
+  { id: 10, title: 'Эко-губка', price: 220, image: 'src/assets/images/gubka.jpg', category: 'Быт', rating: 4.9 },
+  { id: 11, title: 'Органический крем', price: 580, image: 'src/assets/images/kr.jpeg', category: 'Косметика', rating: 4.8 },
+  { id: 12, title: 'Бамбуковая расческа', price: 310, image: 'src/assets/images/ras.jpg', category: 'Гигиена', rating: 4.7 },
+  { id: 13, title: 'Пакеты', price: 190, image: 'src/assets/images/bio_bags.jpg', category: 'Быт', rating: 4.8 },
+  { id: 14, title: 'Термокружка', price: 990, image: 'src/assets/images/thermo.jpg', category: 'Аксессуары', rating: 4.9 },
+  { id: 15, title: 'Эко-гель для душа', price: 380, image: 'src/assets/images/gel.webp', category: 'Косметика', rating: 4.8 },
+  { id: 16, title: 'Щётка для посуды', price: 260, image: 'src/assets/images/dish_brush.webp', category: 'Быт', rating: 4.7 },
+  { id: 17, title: 'Твёрдый кондиционер', price: 310, image: 'src/assets/images/cond.jpg', category: 'Косметика', rating: 4.8 },
+  { id: 18, title: 'Контейнер для еды', price: 650, image: 'src/assets/images/foodbox.jpg', category: 'Быт', rating: 4.9 },
+  { id: 19, title: 'Салфетки из бамбука', price: 210, image: 'src/assets/images/napkins.webp', category: 'Быт', rating: 4.5 },
+  { id: 20, title: 'Твёрдый шампунь', price: 390, image: 'src/assets/images/hardshampoo.jpg', category: 'Косметика', rating: 4.9 },
+  { id: 21, title: 'Освежитель', price: 750, image: 'src/assets/images/fresh.webp', category: 'Быт', rating: 4.6 },
+  { id: 22, title: 'Кокосовое мыло', price: 240, image: 'src/assets/images/cocos.png', category: 'Косметика', rating: 4.8 },
+  { id: 23, title: 'Щётка для одежды', price: 330, image: 'src/assets/images/clothbrush.jpg', category: 'Быт', rating: 4.5 },
+  { id: 24, title: 'Диски для лица', price: 280, image: 'src/assets/images/pads.webp', category: 'Гигиена', rating: 4.7 },
+  { id: 25, title: 'Эко-порошок', price: 460, image: 'src/assets/images/powder.jpeg', category: 'Быт', rating: 4.6 },
+  { id: 26, title: 'Аромасаше', price: 150, image: 'src/assets/images/sachet.jpg', category: 'Быт', rating: 4.9 },
 ];
 
 const CATEGORIES = ['Все', 'Косметика', 'Гигиена', 'Аксессуары', 'Быт'];
@@ -85,27 +84,6 @@ const Products = () => {
       animate={{ opacity: 1 }}
       className="min-h-screen bg-white text-black mb-10"
     >
-      {/* HEADER / КРОШКИ */}
-      <header className="border-b border-black/10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3 text-[11px]">
-            <Link
-              to="/"
-              className="uppercase tracking-[0.25em] text-black/60 hover:text-black transition-colors flex items-center"
-            >
-              <span className="mr-2 text-[9px]">←</span>
-              Главная
-            </Link>
-            <span className="text-black/30">/</span>
-            <span className="uppercase tracking-[0.25em] text-black">
-              Каталог
-            </span>
-          </div>
-          <div className="hidden md:block text-[11px] uppercase tracking-[0.32em] text-black/50">
-            Экологичные товары по подписке
-          </div>
-        </div>
-      </header>
 
       <main className="max-w-7xl mx-auto px-6 pb-18">
         {/* HERO — ЧЁРНАЯ ПОЛОСА */}
